@@ -1,0 +1,36 @@
+name: clothing
+description: A new Flutter project.
+publish_to: 'none' 
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.5 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  logger: ^1.0.0
+  google_fonts: ^3.0.1
+  flutter_native_splash: ^2.2.7
+
+  cupertino_icons: ^1.0.2
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.15.2
+  fluttertoast: ^8.2.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+
+flutter:  
+  assets:
+    - assets/images/
+  fonts:
+    - family: Satify
+      fonts: 
+        - asset: assets/Satisfy/Satisfy-Regular.ttf
+
+
+  uses-material-design: true
