@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'userinput.dart';
 import 'login.dart';
 import 'splash.dart';
-import 'mainpage.dart';
+import 'home.dart';
 import 'package:clothing/utils/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:clothing/firebase_options.dart';
@@ -25,8 +25,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/splash': (context) => SplashScreen(),
         '/login': (context) => LoginScreen(),
-        '/main_page': (context) => MainPage(),
-        '/user_input': (context) => UserInputPage(),
+        '/home': (context) => Home(),
+        '/userinput': (context) => UserInputPage(),
         
       },
     );

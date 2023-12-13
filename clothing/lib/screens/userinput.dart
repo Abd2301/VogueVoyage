@@ -1,6 +1,6 @@
-// UserInputPage.dart
+import 'home.dart';
 import 'package:flutter/material.dart';
-import 'main.dart';
+
 
 class UserInputPage extends StatefulWidget {
   @override
@@ -58,7 +58,7 @@ class _UserInputPageState extends State<UserInputPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => HomePage(),
+                    builder: (context) => Home(),
                   ),
                 );
               },
