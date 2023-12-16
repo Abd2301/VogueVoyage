@@ -2,3 +2,9 @@
 mainsource
 venv
 clothing/android/app/google-services.json
+.idea
+.vscode
+clothing/gradle
+clothing/windows
+clothing/gradlew
+clothing/windows/flutter/CMakeLists.txt

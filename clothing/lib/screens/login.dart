@@ -38,7 +38,7 @@ class LoginScreen extends StatelessWidget {
                 children: [
                   // Your Logo or Image
                   Image.asset(
-                    'images/logo.jpeg',
+                    'assets/images/logo.jpeg',
                     width: 200.0,
                     height: 200.0,
                   ),

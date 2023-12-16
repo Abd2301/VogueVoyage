@@ -1,23 +1,73 @@
 import 'package:flutter/material.dart';
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  String selectedApparelType1 = 'Accessories';
+  String selectedApparelType2 = 'Outwears';
+  String selectedApparelType3 = 'T-Shirt';
+  String selectedApparelType4 = 'Shorts';
+  String selectedApparelType5 = 'Shoes';
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Vogue Voyage'),
-        ),
-        body: const MyCarousels(),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Outfit Builder'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Expanded(
+            child: MyCarousels(
+              selectedApparelType1: selectedApparelType1,
+              selectedApparelType2: selectedApparelType2,
+              selectedApparelType3: selectedApparelType3,
+              selectedApparelType4: selectedApparelType4,
+              selectedApparelType5: selectedApparelType5,
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  List<String> _getApparelTypesForBox(int boxNumber) {
+    switch (boxNumber) {
+      case 1:
+        return ['Accessories', 'Hat'];
+      case 2:
+        return ['Outwears', 'Hoodies'];
+      case 3:
+        return ['T-Shirt', 'Top', 'Shirt', 'Dress'];
+      case 4:
+        return ['Shorts', 'Skirt', 'Jeans', 'Pants'];
+      case 5:
+        return ['Shoes'];
+      default:
+        return [];
+    }
   }
 }
 
 class MyCarousels extends StatelessWidget {
-  const MyCarousels({super.key});
+  final String selectedApparelType1;
+  final String selectedApparelType2;
+  final String selectedApparelType3;
+  final String selectedApparelType4;
+  final String selectedApparelType5;
+
+  const MyCarousels({
+    required this.selectedApparelType1,
+    required this.selectedApparelType2,
+    required this.selectedApparelType3,
+    required this.selectedApparelType4,
+    required this.selectedApparelType5,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,16 +75,19 @@ class MyCarousels extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Expanded(
-          child: CarouselWithButton(initialItems: const ['Image 1', 'Image 2', 'Image 3', 'Image 4']),
+          child: CarouselWithButton(apparelType: selectedApparelType1),
         ),
         Expanded(
-          child: CarouselWithButton(initialItems: const ['Image 5', 'Image 6', 'Image 7', 'Image 8']),
+          child: CarouselWithButton(apparelType: selectedApparelType2),
         ),
         Expanded(
-          child: CarouselWithButton(initialItems: const ['Image 9', 'Image 10', 'Image 11', 'Image 12']),
+          child: CarouselWithButton(apparelType: selectedApparelType3),
         ),
         Expanded(
-          child: CarouselWithButton(initialItems: const ['Image 13', 'Image 14', 'Image 15', 'Image 16']),
+          child: CarouselWithButton(apparelType: selectedApparelType4),
+        ),
+        Expanded(
+          child: CarouselWithButton(apparelType: selectedApparelType5),
         ),
       ],
     );
@@ -42,9 +95,9 @@ class MyCarousels extends StatelessWidget {
 }
 
 class CarouselWithButton extends StatefulWidget {
-  final List<String> initialItems;
+  final String apparelType;
 
-  const CarouselWithButton({super.key, required this.initialItems});
+  const CarouselWithButton({required this.apparelType});
 
   @override
   _CarouselWithButtonState createState() => _CarouselWithButtonState();
@@ -56,7 +109,7 @@ class _CarouselWithButtonState extends State<CarouselWithButton> {
   @override
   void initState() {
     super.initState();
-    items = widget.initialItems;
+    items = _getImagesForApparelType(widget.apparelType);
   }
 
   @override
@@ -70,7 +123,7 @@ class _CarouselWithButtonState extends State<CarouselWithButton> {
         Expanded(
           flex: 3,
           child: ElevatedButton(
-            onPressed: () => _showPopupMenu(context),
+            onPressed: () => _showChangeImagesDialog(context),
             child: const Text('Change Images'),
           ),
         ),
@@ -78,14 +131,14 @@ class _CarouselWithButtonState extends State<CarouselWithButton> {
     );
   }
 
-  void _showPopupMenu(BuildContext context) async {
-    final List<String> options = ['Set 1', 'Set 2', 'Set 3', 'Set 4'];
+ void _showChangeImagesDialog(BuildContext context) async {
+    final List<String> options = _getApparelTypesForBox(widget.apparelType);
 
     final selectedOption = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: const Text('Select Image Set'),
+          title: const Text('Select Apparel Type'),
           children: options
               .map((option) => SimpleDialogOption(
                     onPressed: () {
@@ -101,29 +154,57 @@ class _CarouselWithButtonState extends State<CarouselWithButton> {
     if (selectedOption != null) {
       // Update the items list based on the selected option
       setState(() {
-        switch (selectedOption) {
-          case 'Set 1':
-            items = ['Image A', 'Image B', 'Image C', 'Image D'];
-            break;
-          case 'Set 2':
-            items = ['Image E', 'Image F', 'Image G', 'Image H'];
-            break;
-          case 'Set 3':
-            items = ['Image I', 'Image J', 'Image K', 'Image L'];
-            break;
-          case 'Set 4':
-            items = ['Image M', 'Image N', 'Image O', 'Image P'];
-            break;
-        }
+        items = _getImagesForApparelType(selectedOption);
       });
     }
+  }
+
+  List<String> _getApparelTypesForBox(String apparelType) {
+    return _getApparelTypesForBoxNumber(apparelType);
+  }
+
+  List<String> _getApparelTypesForBoxNumber(String apparelType) {
+    // Your logic for each box
+    switch (apparelType) {
+      case 'Neckwear':
+      case 'Ring':
+      case 'Hat':
+        return ['Ring', 'Hat', 'Neckwear'];
+      case 'Outwears':
+      case 'Hoodies':
+        return ['Outwears', 'Hoodies'];
+      case 'T-Shirt':
+      case 'Top':
+      case 'Shirt':
+      case 'Dress':
+        return ['T-Shirt', 'Top', 'Shirt', 'Dress'];
+      case 'Shorts':
+      case 'Skirt':
+      case 'Jeans':
+      case 'Pants':
+        return ['Shorts', 'Skirt', 'Jeans', 'Pants'];
+      case 'Shoes':
+        return ['Shoes'];
+      default:
+        return [];
+    }
+  }
+   List<String> _getImagesForApparelType(String type) {
+    // Logic to get the list of images based on the selected type
+    // You should replace this with your own logic based on the folder structure
+    return [
+      'assets/$type/image1.jpg',
+      'assets/$type/image2.jpg',
+      'assets/$type/image3.jpg',
+      // Add more images as needed
+    ];
   }
 }
 
 class MyCarousel extends StatelessWidget {
   final List<String> items;
 
-  MyCarousel({super.key, required this.items});
+  MyCarousel({required this.items});
 
   @override
   Widget build(BuildContext context) {
@@ -141,11 +222,10 @@ class MyCarousel extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Container(
-        color: Colors.blue,
         child: Center(
-          child: Text(
+          child: Image.asset(
             item,
-            style: const TextStyle(fontSize: 20.0, color: Colors.white),
+            fit: BoxFit.cover,
           ),
         ),
       ),

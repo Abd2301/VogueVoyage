@@ -21,7 +21,7 @@ class _SplashState extends State<SplashScreen> {
     return Scaffold(
       body: Center(
         child: Image.asset(
-          'images/splash.jpeg',  // Replace 'splash.jpeg' with the actual image file in your assets folder
+          'assets/images/splash.jpeg',  // Replace 'splash.jpeg' with the actual image file in your assets folder
           width: 200.0,  // Adjust the width as needed
           height: 200.0, // Adjust the height as needed
         ),

@@ -18,6 +18,11 @@ if (flutterVersionCode == null) {
     flutterVersionCode = '1'
 }
 
+def flutterRoot = localProperties.getProperty('flutter.sdk')
+if (flutterRoot == null) {
+    throw new FileNotFoundException ("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+}
+
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
     flutterVersionName = '1.0'
@@ -25,10 +30,12 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+
 apply plugin: "com.google.gms.google-services"
 
 android {
+
+
     namespace "com.example.clothing"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
@@ -37,7 +44,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
+    externalNativeBuild {
+        cmake {
+            
+            version "3.22.1"
+        }
+    }
+    
     kotlinOptions {
         jvmTarget = '1.8'
     }
