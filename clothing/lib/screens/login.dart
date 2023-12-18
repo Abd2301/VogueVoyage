@@ -8,8 +8,8 @@ class LoginScreen extends StatelessWidget {
   void navigateToHomeOrUserInput(
       BuildContext context, bool isSigningUp, bool isSigningIn) {
     if (isSigningUp) {
-      // Navigate to userinput.dart
-      Navigator.pushReplacementNamed(context, '/userinput');
+      // Navigate to userinputmain.dart
+      Navigator.pushReplacementNamed(context, '/userinputmain');
     } else if (isSigningIn) {
       Navigator.pushReplacementNamed(context, '/home');
     } else {
