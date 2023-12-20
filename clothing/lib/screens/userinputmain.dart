@@ -63,7 +63,9 @@ void _submitForm(BuildContext context) {
       'Name: ${selectionModel.name}, ' +
       'Age: ${selectionModel.age}, ' +
       'Gender: ${selectionModel.gender}');
+       Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
 }
+
 
 class UserInputPage extends StatefulWidget {
   final VoidCallback onContinuePressed;

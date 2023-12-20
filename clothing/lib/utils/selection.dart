@@ -16,8 +16,15 @@ class SelectionModel with ChangeNotifier {
     skinColorOption = option;
     notifyListeners();
   }
-
+  //user_input
   void updateUserInfo({String? name, int? age, String? gender}) {
+    this.name = name;
+    this.age = age;
+    this.gender = gender;
+    notifyListeners();
+  }
+  //user_info
+  void updateUserDetails({required String name, required int age, required String gender}) {
     this.name = name;
     this.age = age;
     this.gender = gender;

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'camera_screen.dart';
+import 'user_info.dart';
 
 
 class Home extends StatefulWidget {
@@ -7,11 +9,21 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  late PageController _pageController;
   String selectedApparelType1 = 'Accessories';
   String selectedApparelType2 = 'Outwears';
   String selectedApparelType3 = 'T-Shirt';
   String selectedApparelType4 = 'Shorts';
   String selectedApparelType5 = 'Shoes';
+  int _currentPage = 1; // Assuming you want to start from the CameraScreen
+  
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _currentPage);
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -19,22 +31,53 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: const Text('Outfit Builder'),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      body: GestureDetector(
+        onHorizontalDragEnd: (details) {
+          if (details.primaryVelocity! > 0) {
+            // Swiping to the right
+            _pageController.previousPage(
+              duration: Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          } else if (details.primaryVelocity! < 0) {
+            // Swiping to the left
+            _pageController.nextPage(
+              duration: Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          }
+        },
+      child: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _currentPage = index;
+          });
+        },
         children: [
-          Expanded(
-            child: MyCarousels(
-              selectedApparelType1: selectedApparelType1,
-              selectedApparelType2: selectedApparelType2,
-              selectedApparelType3: selectedApparelType3,
-              selectedApparelType4: selectedApparelType4,
-              selectedApparelType5: selectedApparelType5,
-            ),
+          CameraScreen(pageController: _pageController),
+          
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Expanded(
+                child: MyCarousels(
+                  selectedApparelType1: selectedApparelType1,
+                  selectedApparelType2: selectedApparelType2,
+                  selectedApparelType3: selectedApparelType3,
+                  selectedApparelType4: selectedApparelType4,
+                  selectedApparelType5: selectedApparelType5,
+                ),
+              ),
+            ],
           ),
+          UserInfoScreen(),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   List<String> _getApparelTypesForBox(int boxNumber) {
     switch (boxNumber) {
@@ -131,7 +174,7 @@ class _CarouselWithButtonState extends State<CarouselWithButton> {
     );
   }
 
- void _showChangeImagesDialog(BuildContext context) async {
+  void _showChangeImagesDialog(BuildContext context) async {
     final List<String> options = _getApparelTypesForBox(widget.apparelType);
 
     final selectedOption = await showDialog<String>(
@@ -189,7 +232,8 @@ class _CarouselWithButtonState extends State<CarouselWithButton> {
         return [];
     }
   }
-   List<String> _getImagesForApparelType(String type) {
+
+  List<String> _getImagesForApparelType(String type) {
     // Logic to get the list of images based on the selected type
     // You should replace this with your own logic based on the folder structure
     return [
