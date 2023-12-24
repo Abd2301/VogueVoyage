@@ -29,7 +29,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Outfit Builder'),
+        title: const Text('Vogue Voyage'),
       ),
       body: GestureDetector(
         onHorizontalDragEnd: (details) {
@@ -47,36 +47,45 @@ class _HomeState extends State<Home> {
             );
           }
         },
-      child: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _currentPage = index;
-          });
-        },
-        children: [
-          CameraScreen(pageController: _pageController),
-          
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(
-                child: MyCarousels(
-                  selectedApparelType1: selectedApparelType1,
-                  selectedApparelType2: selectedApparelType2,
-                  selectedApparelType3: selectedApparelType3,
-                  selectedApparelType4: selectedApparelType4,
-                  selectedApparelType5: selectedApparelType5,
+      child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Outfit Builder',
+                style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ],
-          ),
-          UserInfoScreen(),
-        ],
+            ),
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                children: [
+
+                  CameraScreen(pageController: _pageController),  // CameraScreen as the second page
+                  MyCarousels(
+                    selectedApparelType1: selectedApparelType1,
+                    selectedApparelType2: selectedApparelType2,
+                    selectedApparelType3: selectedApparelType3,
+                    selectedApparelType4: selectedApparelType4,
+                    selectedApparelType5: selectedApparelType5,
+                  ),
+                  UserInfoScreen(),  // UserInfoScreen as the third page
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
 
   List<String> _getApparelTypesForBox(int boxNumber) {

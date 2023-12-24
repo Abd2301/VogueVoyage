@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 
@@ -14,6 +13,7 @@ class CameraScreen extends StatefulWidget {
 
 class _CameraScreenState extends State<CameraScreen> {
   late CameraController _controller;
+  // ignore: unused_field
   late Future<void> _initializeControllerFuture;
   bool _showRetryButton = false;
 

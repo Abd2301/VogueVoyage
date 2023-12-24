@@ -1,20 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:clothing/utils/selection.dart';
-import 'package:provider/provider.dart';
+import 'package:clothing/features/submitForm.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart' as provider;
 
+class MyUserPage extends riverpod.ConsumerWidget {
+  final String userId;
 
-class MyUserPage extends StatefulWidget {
+  final selectionModelProvider = riverpod.ChangeNotifierProvider.autoDispose<SelectionModel>((ref) {
+  return SelectionModel();
+  });
+  MyUserPage({required this.userId});
+
   @override
-  _MyUserPageState createState() => _MyUserPageState();
-}
+  Widget build(BuildContext context, riverpod.WidgetRef ref) { // Change here
+    final selectionModel = ref.watch(selectionModelProvider);
 
-class _MyUserPageState extends State<MyUserPage> {
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
-  final SelectionModel _selectionModel = SelectionModel();
+    final PageController _pageController = PageController();
+    int _currentPage = 0;
 
-  @override
-  Widget build(BuildContext context) {
+    void _navigateToNextPage() {
+      _pageController.nextPage(
+          duration: Duration(milliseconds: 500), curve: Curves.ease);
+    }
+
+    void _updateUserSelections({
+      required SelectionModel selectionModel,
+    }) {
+      selectionModel.updateUserInfo(
+        name: selectionModel.name,
+        age: selectionModel.age,
+        gender: selectionModel.gender,
+        bodyTypeOption: selectionModel.bodyTypeOption,
+        skinColorOption: selectionModel.skinColorOption,
+      );
+    }
+
+    void navigateToMain() {
+      int? parsedAge = int.tryParse(selectionModel.age.toString());
+
+      if (parsedAge != null) {
+        Navigator.pushReplacementNamed(
+          context,
+          '/main',
+          arguments: selectionModel,
+        );
+      } else {
+        print('Invalid age entered');
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Welcome!'),
@@ -23,68 +59,51 @@ class _MyUserPageState extends State<MyUserPage> {
         controller: _pageController,
         children: [
           UserInputPage(
-            onContinuePressed: () {
-              _pageController.nextPage(
-                  duration: Duration(milliseconds: 500), curve: Curves.ease);
-            },
-            selectionModel: _selectionModel, // Pass selectionModel here
+            onContinuePressed: _navigateToNextPage,
+            selectionModel: selectionModel,
           ),
           BodyTypeOptions(
-            onContinuePressed: () {
-              _pageController.nextPage(
-                  duration: Duration(milliseconds: 500), curve: Curves.ease);
-            },
-            selectionModel: _selectionModel, // Pass selectionModel here
+            onContinuePressed: _navigateToNextPage,
+            selectionModel: selectionModel,
           ),
           SkinColorOptions(
             onSubmitPressed: () {
-              _submitForm(context);
+              _updateUserSelections(
+                selectionModel: selectionModel,
+              );
+              submitForm(context, userId, selectionModel);
             },
-            selectionModel: _selectionModel, // Pass selectionModel here
+            selectionModel: selectionModel,
+            userId: userId,
           ),
         ],
         onPageChanged: (int page) {
-          setState(() {
-            _currentPage = page;
-          });
+          _currentPage = page;
         },
       ),
     );
   }
 }
 
-void _submitForm(BuildContext context) {
-  // Get the SelectionModel instance
-  SelectionModel selectionModel = context.read<SelectionModel>();
-
-  // Perform final submission actions
-  print('Form submitted with Body Type: ${selectionModel.bodyTypeOption}, ' +
-      'Skin Color: ${selectionModel.skinColorOption}, ' +
-      'Name: ${selectionModel.name}, ' +
-      'Age: ${selectionModel.age}, ' +
-      'Gender: ${selectionModel.gender}');
-       Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
-}
-
-
 class UserInputPage extends StatefulWidget {
-  final VoidCallback onContinuePressed;
-  final SelectionModel selectionModel;
-
-  UserInputPage(
-      {required this.onContinuePressed, required this.selectionModel});
+  final Function onContinuePressed;
+  SelectionModel selectionModel;
+  
+  UserInputPage({
+    required this.onContinuePressed,
+    required this.selectionModel,
+  });
 
   @override
   _UserInputPageState createState() => _UserInputPageState();
+  
 }
 
 class _UserInputPageState extends State<UserInputPage> {
-  String? _selectedGender;
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _ageController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
+    final selectionModel = widget.selectionModel; // Directly use the passed selectionModel
+    String _selectedGender = 'Other';
     return Scaffold(
       appBar: AppBar(
         title: Text('User Input'),
@@ -94,29 +113,25 @@ class _UserInputPageState extends State<UserInputPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
-              controller: _nameController,
-              onChanged: (value) {
-                // Handle user input
-              },
+              onChanged: (value) => selectionModel.name = value,
               decoration: InputDecoration(labelText: 'Enter your name'),
             ),
             TextField(
-              controller: _ageController,
-              onChanged: (value) {
-                // Handle user input
-              },
+              onChanged: (value) => selectionModel.age = int.tryParse(value) ?? 0,
               decoration: InputDecoration(labelText: 'Enter your age'),
+              keyboardType: TextInputType.number,
             ),
             SizedBox(height: 20),
             DropdownButton<String>(
               hint: Text('Select Gender'),
-              value: _selectedGender,
-              onChanged: (String? newValue) {
+              value: selectionModel.gender,
+              onChanged: (String? gender) {
                 setState(() {
-                  _selectedGender = newValue;
-                });
-              },
-              items: ['Male', 'Female']
+                    _selectedGender = gender ?? 'Other';
+                    selectionModel.gender = _selectedGender; // Update the model too, if needed
+                  });
+                },
+              items: ['Male', 'Female','Other']
                   .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -126,13 +141,8 @@ class _UserInputPageState extends State<UserInputPage> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                // Set the values in the _selectionModel
-                widget.selectionModel.name = _nameController.text;
-                widget.selectionModel.age = int.tryParse(_ageController.text);
-                widget.selectionModel.gender = _selectedGender;
-
-                // Continue to the next page
+              onPressed: () async {
+                
                 widget.onContinuePressed();
               },
               child: Text('Continue'),
@@ -144,22 +154,29 @@ class _UserInputPageState extends State<UserInputPage> {
   }
 }
 
-// Import statements remain unchanged
-
 class BodyTypeOptions extends StatefulWidget {
   final VoidCallback onContinuePressed;
-  final SelectionModel selectionModel; // Add this line
+  final SelectionModel selectionModel;
 
-  BodyTypeOptions(
-      {required this.onContinuePressed,
-      required this.selectionModel}); // Add the parameter
+  BodyTypeOptions({
+    required this.onContinuePressed,
+    required this.selectionModel,
+  });
 
   @override
   _BodyTypeOptionsState createState() => _BodyTypeOptionsState();
 }
 
 class _BodyTypeOptionsState extends State<BodyTypeOptions> {
-  int? _selectedOption;
+  SelectionModel _selectionModel = SelectionModel();
+  String? _selectedOption;
+
+  void _updateUserSelection(String selectedOption) {
+    _selectionModel.bodyTypeOption = selectedOption; // Store the selected body type
+    setState(() {
+      _selectedOption = selectedOption;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -171,15 +188,21 @@ class _BodyTypeOptionsState extends State<BodyTypeOptions> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            buildClickableImage('assets/body_type1.png', 'Option 1', 0),
+            buildClickableImage(
+                'assets/images/body_type1.png', 'Ectomorph', 'ecto'),
             SizedBox(height: 20),
-            buildClickableImage('assets/body_type2.png', 'Option 2', 1),
+            buildClickableImage(
+                'assets/images/body_type2.png', 'Mesomorph', 'meso'),
             SizedBox(height: 20),
-            buildClickableImage('assets/body_type3.png', 'Option 3', 2),
+            buildClickableImage(
+                'assets/images/body_type3.png', 'Endomorph', 'endo'),
+            SizedBox(height: 20),
             ElevatedButton(
-              onPressed: widget.onContinuePressed,
+              onPressed: () {
+                widget.onContinuePressed();
+              },
               child: Text('Continue'),
-            ),
+            )
           ],
         ),
       ),
@@ -187,14 +210,14 @@ class _BodyTypeOptionsState extends State<BodyTypeOptions> {
   }
 
   Widget buildClickableImage(
-      String imagePath, String optionText, int optionIndex) {
+      String imagePath, String optionText, String optionIndex) {
     bool isSelected = _selectedOption == optionIndex;
 
     return Column(
       children: [
-        InkWell(
+        GestureDetector(
           onTap: () {
-            // Handle the click event
+            _updateUserSelection(optionIndex);
             setState(() {
               _selectedOption = optionIndex;
             });
@@ -212,7 +235,8 @@ class _BodyTypeOptionsState extends State<BodyTypeOptions> {
               colorFilter: isSelected
                   ? ColorFilter.mode(
                       Colors.black.withOpacity(0.5), BlendMode.darken)
-                  : ColorFilter.mode(Colors.transparent, BlendMode.clear),
+                  : ColorFilter.mode(Colors.transparent,
+                      BlendMode.clear),
               child: Image.asset(
                 imagePath,
                 width: 100,
@@ -232,18 +256,32 @@ class _BodyTypeOptionsState extends State<BodyTypeOptions> {
 }
 
 class SkinColorOptions extends StatefulWidget {
-  final VoidCallback onSubmitPressed;
-  final SelectionModel selectionModel;
+  final VoidCallback? onSubmitPressed;
+  final SelectionModel? selectionModel;
+  final String userId;
 
-  SkinColorOptions(
-      {required this.onSubmitPressed, required this.selectionModel});
+
+  SkinColorOptions({
+    this.onSubmitPressed,
+    this.selectionModel,
+    required this.userId,// New parameter
+  });
 
   @override
   _SkinColorOptionsState createState() => _SkinColorOptionsState();
 }
 
 class _SkinColorOptionsState extends State<SkinColorOptions> {
-  int? _selectedOption;
+  SelectionModel _selectionModel = SelectionModel();
+  String? _selectedOption;
+
+  void _updateUserSelection(String selectedOption) {
+  setState(() {
+    _selectedOption = selectedOption;
+    _selectionModel.skinColorOption = selectedOption; // Store the selected skin color
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -255,13 +293,43 @@ class _SkinColorOptionsState extends State<SkinColorOptions> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            buildClickableImage('assets/skin_color1.png', 'Warm', 0),
+            buildClickableImage('assets/images/skin_color1.png', 'Warm', 'warm'),
             SizedBox(height: 20),
-            buildClickableImage('assets/skin_color2.png', 'Neutral', 1),
+            buildClickableImage('assets/images/skin_color2.png', 'Neutral', 'neutral'),
             SizedBox(height: 20),
-            buildClickableImage('assets/skin_color3.png', 'Cool', 2),
+            buildClickableImage('assets/images/skin_color3.png', 'Cool', 'cool'),
+            SizedBox(height: 20),
             ElevatedButton(
-              onPressed: widget.onSubmitPressed,
+              onPressed: () async {
+                if (_selectedOption != null) {
+                  _updateUserSelection(_selectedOption!);
+                  
+                  // Access properties directly from the _selectionModel object
+                  print(widget.userId);
+                  print(_selectionModel.name); // Directly access name
+                  print(_selectionModel.age);  // Directly access age
+                  print(_selectionModel.gender); // Directly access gender
+                  print(_selectionModel.skinColorOption);
+                  print(_selectionModel.bodyTypeOption);
+
+                  if (_selectionModel.bodyTypeOption != null &&
+                      _selectionModel.skinColorOption != null &&
+                      widget.userId != null) {
+                    submitForm(
+                      context,
+                      widget.userId,
+                      _selectionModel,
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Please complete all selections')));
+                  }
+                  widget.onSubmitPressed!();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Please select an option')));
+                }
+              },
               child: Text('Submit'),
             ),
           ],
@@ -270,15 +338,13 @@ class _SkinColorOptionsState extends State<SkinColorOptions> {
     );
   }
 
-  Widget buildClickableImage(
-      String imagePath, String optionText, int optionIndex) {
+  Widget buildClickableImage(String imagePath, String optionText, String optionIndex) {
     bool isSelected = _selectedOption == optionIndex;
 
     return Column(
       children: [
         GestureDetector(
           onTap: () {
-            // Handle the click event
             setState(() {
               _selectedOption = optionIndex;
             });
@@ -297,7 +363,7 @@ class _SkinColorOptionsState extends State<SkinColorOptions> {
                   ? ColorFilter.mode(
                       Colors.black.withOpacity(0.5), BlendMode.darken)
                   : ColorFilter.mode(Colors.transparent,
-                      BlendMode.clear), // Provide a default non-nullable value
+                      BlendMode.clear),
               child: Image.asset(
                 imagePath,
                 width: 100,

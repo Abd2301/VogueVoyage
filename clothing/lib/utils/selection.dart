@@ -1,33 +1,43 @@
-import 'package:flutter/foundation.dart'; // Add this import statement
+import 'package:flutter/foundation.dart';
 
 class SelectionModel with ChangeNotifier {
-  int? bodyTypeOption;
-  int? skinColorOption;
-  String? name;
-  int? age;
-  String? gender;
+  String name;
+  int age;
+  String gender;
+  String bodyTypeOption;
+  String skinColorOption;
 
-  void updateBodyType(int option) {
-    bodyTypeOption = option;
-    notifyListeners();
+  SelectionModel({
+    this.name = '',
+    this.age = 0,
+    this.gender = '',
+    this.bodyTypeOption = '',
+    this.skinColorOption = '', 
+  });
+
+  void updateUserInfo({
+    required String name,
+    required int? age,
+    required String gender,
+    required String bodyTypeOption,
+    required String skinColorOption,
+  }) {
+    this.name = name;
+    this.age = age!;
+    this.gender = gender;
+    this.bodyTypeOption = bodyTypeOption;
+    this.skinColorOption = skinColorOption;
+    notifyListeners(); // Notify listeners to rebuild widgets listening to this model.
   }
 
-  void updateSkinColor(int option) {
-    skinColorOption = option;
-    notifyListeners();
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'age': age,
+      'gender': gender,
+      'bodyTypeOption': bodyTypeOption,
+      'skinColorOption': skinColorOption,
+    };
   }
-  //user_input
-  void updateUserInfo({String? name, int? age, String? gender}) {
-    this.name = name;
-    this.age = age;
-    this.gender = gender;
-    notifyListeners();
-  }
-  //user_info
-  void updateUserDetails({required String name, required int age, required String gender}) {
-    this.name = name;
-    this.age = age;
-    this.gender = gender;
-    notifyListeners();
-  }
+
 }

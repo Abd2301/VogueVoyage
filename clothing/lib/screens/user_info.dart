@@ -11,6 +11,12 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _ageController = TextEditingController();
   TextEditingController _genderController = TextEditingController();
+  TextEditingController _bodyShapeController =  TextEditingController(); 
+  TextEditingController _skinToneController =  TextEditingController(); 
+
+  // Dropdown options
+  List<String> bodyShapes = ['Ectomorph', 'Mesomorph', 'Endomorph'];
+  List<String> skinTones = ['Neutral', 'Warm', 'Cool'];
 
   @override
   void initState() {
@@ -18,21 +24,26 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
     _loadUserData();
   }
 
-_loadUserData() {
-  SelectionModel selectionModel = context.read<SelectionModel>();
-  _nameController.text = selectionModel.name ?? '';  // Ensure it's not null
-  _ageController.text = selectionModel.age?.toString() ?? '';  // Ensure it's not null
-  _genderController.text = selectionModel.gender ?? '';  // Ensure it's not null
-}
-
+  _loadUserData() {
+    SelectionModel selectionModel = context.read<SelectionModel>();
+    _nameController.text = selectionModel.name ?? '';
+    _ageController.text = selectionModel.age?.toString() ?? '';
+    _genderController.text = selectionModel.gender ?? '';
+    _bodyShapeController.text =
+        selectionModel.bodyTypeOption ?? ''; // Populate body shape
+    _skinToneController.text =
+        selectionModel.skinColorOption ?? ''; // Populate skin tone
+  }
 
   void _submitForm(BuildContext context) {
     SelectionModel selectionModel = context.read<SelectionModel>();
-    selectionModel.updateUserDetails(
-      name: _nameController.text,
-      age: int.tryParse(_ageController.text) ?? 0,
-      gender: _genderController.text,
-    );
+    selectionModel.updateUserInfo(
+        name: _nameController.text,
+        age: int.tryParse(_ageController.text) ?? 0,
+        gender: _genderController.text,
+        bodyTypeOption: _bodyShapeController.text, // Save body shape
+        skinColorOption: _skinToneController.text // Save skin tone
+        );
     Navigator.pop(context); // Go back to previous screen
   }
 
@@ -47,18 +58,64 @@ _loadUserData() {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Name'),
-            TextField(controller: _nameController),
-            SizedBox(height: 20),
-            Text('Age'),
-            TextField(controller: _ageController, keyboardType: TextInputType.number),
-            SizedBox(height: 20),
-            Text('Gender'),
-            TextField(controller: _genderController),
+            TextField(
+              controller: _nameController,
+              decoration: InputDecoration(labelText: 'Name'),
+            ),
+            SizedBox(height: 16.0),
+            TextField(
+              controller: _ageController,
+              decoration: InputDecoration(labelText: 'Age'),
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 16.0),
+            TextField(
+              controller: _genderController,
+              decoration: InputDecoration(labelText: 'Gender'),
+            ),
+            SizedBox(height: 16.0),
+            DropdownButtonFormField<String>(
+              value: _bodyShapeController.text,
+              items: bodyShapes.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _bodyShapeController.text = newValue!;
+                });
+              },
+              decoration: InputDecoration(labelText: 'Body Shape'),
+            ),
+            SizedBox(height: 16.0),
+            DropdownButtonFormField<String>(
+              value: _skinToneController.text,
+              items: skinTones.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _skinToneController.text = newValue!;
+                });
+              },
+              decoration: InputDecoration(labelText: 'Skin Tone'),
+            ),
             Spacer(),
-            ElevatedButton(
-              onPressed: () => _submitForm(context),
-              child: Text('Save'),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    right: 16.0),
+                child: ElevatedButton(
+                  onPressed: () => _submitForm(context),
+                  child: Text('Save'),
+                ),
+              ),
             ),
           ],
         ),
