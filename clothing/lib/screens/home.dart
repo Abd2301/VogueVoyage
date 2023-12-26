@@ -47,6 +47,7 @@ class _HomeState extends State<Home> {
             );
           }
         },
+
       child: Column(
           children: [
             Padding(
@@ -60,27 +61,32 @@ class _HomeState extends State<Home> {
               ),
             ),
             Expanded(
-              child: PageView(
-                controller: _pageController,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentPage = index;
-                  });
-                },
-                children: [
-
-                  CameraScreen(pageController: _pageController),  // CameraScreen as the second page
-                  MyCarousels(
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentPage = index;
+                });
+              },
+              children: [
+                CameraScreen(pageController: _pageController),  // CameraScreen as the second page
+                
+                Padding(
+                  padding: EdgeInsets.all(36.0),
+                  child: MyCarousels(
                     selectedApparelType1: selectedApparelType1,
                     selectedApparelType2: selectedApparelType2,
                     selectedApparelType3: selectedApparelType3,
                     selectedApparelType4: selectedApparelType4,
                     selectedApparelType5: selectedApparelType5,
                   ),
-                  UserInfoScreen(),  // UserInfoScreen as the third page
-                ],
-              ),
+                ),
+
+                UserInfoScreen(),  // UserInfoScreen as the third page
+              ],
             ),
+          ),
+                    
           ],
         ),
       ),

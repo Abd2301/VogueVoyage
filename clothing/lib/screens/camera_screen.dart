@@ -18,19 +18,22 @@ class _CameraScreenState extends State<CameraScreen> {
   bool _showRetryButton = false;
 
   @override
-  void initState() {
-    super.initState();
+void initState() {
+  super.initState();
 
-    // Obtain a list of the available cameras on the device.
-    availableCameras().then((cameras) {
-      if (cameras.isNotEmpty) {
-        _controller = CameraController(cameras[0], ResolutionPreset.medium);
-        _initializeControllerFuture = _controller.initialize();
-        setState(() {});
-      }
-    });
-  }
-
+  // Obtain a list of the available cameras on the device.
+  availableCameras().then((cameras) {
+    if (cameras.isNotEmpty) {
+      _controller = CameraController(cameras[0], ResolutionPreset.medium);
+      _initializeControllerFuture = _controller.initialize();
+      
+      // Set _showRetryButton to true once the controller is initialized
+      setState(() {
+        _showRetryButton = true;
+      });
+    }
+  });
+}
   @override
   Widget build(BuildContext context) {
     if (!_controller.value.isInitialized) {
@@ -59,6 +62,19 @@ class _CameraScreenState extends State<CameraScreen> {
               ],
             ),
           ),
+        
+        // Add the submit button here
+        Positioned(
+          bottom: 60, // Adjust position as needed
+          left: 0,
+          right: 0,
+          child: Center(
+            child: ElevatedButton(
+              onPressed: () => _submitPhoto(),  // Define the function for submission
+              child: Text('Submit Photo'),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -72,8 +88,12 @@ class _CameraScreenState extends State<CameraScreen> {
       setState(() {});
     });
   }
+  void _submitPhoto() {
+    // Logic to submit the photo goes here
+    print('Submitting photo...');
+  }
 
-Future<void> _generateOutfit() async {
+  Future<void> _generateOutfit() async {
   try {
     final image = await _controller.takePicture();
 

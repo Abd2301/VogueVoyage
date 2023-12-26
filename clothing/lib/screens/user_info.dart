@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:clothing/utils/selection.dart'; // Import your SelectionModel file
+import 'package:clothing/features/submitForm.dart';
 
 class UserInfoScreen extends StatefulWidget {
   @override
@@ -11,8 +12,9 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _ageController = TextEditingController();
   TextEditingController _genderController = TextEditingController();
-  TextEditingController _bodyShapeController =  TextEditingController(); 
-  TextEditingController _skinToneController =  TextEditingController(); 
+  String? _bodyShape;
+  String? _skinTone;
+  SelectionModel? selectionModel;
 
   // Dropdown options
   List<String> bodyShapes = ['Ectomorph', 'Mesomorph', 'Endomorph'];
@@ -21,31 +23,28 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   @override
   void initState() {
     super.initState();
+    // Initialize the selectionModel after the widget has been created
+    selectionModel = context.read<SelectionModel>();
     _loadUserData();
   }
 
   _loadUserData() {
-    SelectionModel selectionModel = context.read<SelectionModel>();
-    _nameController.text = selectionModel.name ?? '';
-    _ageController.text = selectionModel.age?.toString() ?? '';
-    _genderController.text = selectionModel.gender ?? '';
-    _bodyShapeController.text =
-        selectionModel.bodyTypeOption ?? ''; // Populate body shape
-    _skinToneController.text =
-        selectionModel.skinColorOption ?? ''; // Populate skin tone
+    if (selectionModel != null) {
+      _nameController.text = selectionModel!.name ?? '';
+      _ageController.text = selectionModel!.age?.toString() ?? '';
+      _genderController.text = selectionModel!.gender ?? '';
+
+      // Check if the values exist in the lists before setting
+      _bodyShape = bodyShapes.contains(selectionModel!.bodyTypeOption)
+          ? selectionModel!.bodyTypeOption
+          : null;
+
+      _skinTone = skinTones.contains(selectionModel!.skinColorOption)
+          ? selectionModel!.skinColorOption
+          : null;
+    }
   }
 
-  void _submitForm(BuildContext context) {
-    SelectionModel selectionModel = context.read<SelectionModel>();
-    selectionModel.updateUserInfo(
-        name: _nameController.text,
-        age: int.tryParse(_ageController.text) ?? 0,
-        gender: _genderController.text,
-        bodyTypeOption: _bodyShapeController.text, // Save body shape
-        skinColorOption: _skinToneController.text // Save skin tone
-        );
-    Navigator.pop(context); // Go back to previous screen
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,9 +72,12 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               controller: _genderController,
               decoration: InputDecoration(labelText: 'Gender'),
             ),
+            // Dropdown for Body Shape
             SizedBox(height: 16.0),
-            DropdownButtonFormField<String>(
-              value: _bodyShapeController.text,
+            Text('Body Shape',
+                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+            DropdownButton<String>(
+              value: _bodyShape,
               items: bodyShapes.map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -84,14 +86,19 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               }).toList(),
               onChanged: (String? newValue) {
                 setState(() {
-                  _bodyShapeController.text = newValue!;
+                  _bodyShape = newValue;
                 });
               },
-              decoration: InputDecoration(labelText: 'Body Shape'),
+              isExpanded: true,
+              hint: Text('Select Body Shape'),
             ),
+
+            // Dropdown for Skin Tone
             SizedBox(height: 16.0),
-            DropdownButtonFormField<String>(
-              value: _skinToneController.text,
+            Text('Skin Tone',
+                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+            DropdownButton<String>(
+              value: _skinTone,
               items: skinTones.map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -100,19 +107,19 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               }).toList(),
               onChanged: (String? newValue) {
                 setState(() {
-                  _skinToneController.text = newValue!;
+                  _skinTone = newValue;
                 });
               },
-              decoration: InputDecoration(labelText: 'Skin Tone'),
+              isExpanded: true,
+              hint: Text('Select Skin Tone'),
             ),
             Spacer(),
             Align(
               alignment: Alignment.centerRight,
               child: Padding(
-                padding: const EdgeInsets.only(
-                    right: 16.0),
+                padding: const EdgeInsets.only(right: 16.0),
                 child: ElevatedButton(
-                  onPressed: () => _submitForm(context),
+                  onPressed: () => submitForm,
                   child: Text('Save'),
                 ),
               ),

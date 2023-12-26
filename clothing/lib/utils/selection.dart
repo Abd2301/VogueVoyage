@@ -29,15 +29,8 @@ class SelectionModel with ChangeNotifier {
     this.skinColorOption = skinColorOption;
     notifyListeners(); // Notify listeners to rebuild widgets listening to this model.
   }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'age': age,
-      'gender': gender,
-      'bodyTypeOption': bodyTypeOption,
-      'skinColorOption': skinColorOption,
-    };
-  }
-
+  void updateGender(String newGender) {
+  gender = newGender;
+  notifyListeners(); // Notify listeners to rebuild widgets listening to this model.
+ }
 }

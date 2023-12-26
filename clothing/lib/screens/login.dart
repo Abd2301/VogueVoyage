@@ -1,21 +1,30 @@
 import 'package:clothing/features/text.dart';
-import 'package:clothing/screens/userinputmain.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:clothing/features/auth.dart';
 import 'package:clothing/utils/crypt.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart';
 
-class LoginScreen extends ConsumerWidget {
-  late final PageController _pageController; // Declare but don't initialize yet
+
+class UserIdNotifier extends ChangeNotifier {
+  String _userId = '';
+
+  String get userId => _userId;
+
+  set userId(String value) {
+    _userId = value;
+    notifyListeners();
+  }
+}
+
+class LoginScreen extends StatelessWidget {
+  late final PageController _pageController;
 
   LoginScreen({Key? key}) : super(key: key) {
-    _pageController = PageController(); // Initialize _pageController in the constructor
+    _pageController = PageController();
   }
 
-    void navigateToHomeOrUserInput(
-      BuildContext context, bool isSigningUp, bool isSigningIn) {
+  void navigateToHomeOrUserInput(BuildContext context, bool isSigningUp, bool isSigningIn) {
     if (isSigningUp) {
       Navigator.pushReplacementNamed(context, '/userinputmain');
     } else if (isSigningIn) {
@@ -24,24 +33,21 @@ class LoginScreen extends ConsumerWidget {
       showToast(message: 'Error occurred');
     }
   }
-  // Declare userIdState here
-  final userIdState = StateProvider<String>((ref) => '');
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final Auth _auth = Auth();
-  
+
+
   void _navigateToNextPage() {
     _pageController.nextPage(
       duration: Duration(milliseconds: 500),
       curve: Curves.ease,
     );
   }
-
+  
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-
-
-
+  Widget build(BuildContext context) {
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+    final Auth _auth = Auth();
+  
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -77,8 +83,7 @@ class LoginScreen extends ConsumerWidget {
                           String email = emailController.text;
                           String password = passwordController.text;
 
-                          User? user = await _auth.signInWithEmailAndPassword(
-                              email, password);
+                          User? user = await _auth.signInWithEmailAndPassword(email, password);
 
                           if (user != null) {
                             String email = user.email ?? "";
@@ -86,12 +91,10 @@ class LoginScreen extends ConsumerWidget {
                               showToast(message: 'Signed in: $email');
                               String userId = generateUserIdFromEmail(email);
 
-                              Navigator.push(
+                              Navigator.pushReplacementNamed(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (context) => SkinColorOptions(
-                                      userId: userId),
-                                ),
+                                '/userinputmain',
+                                arguments: {'userId': userId}, // Corrected here
                               );
                               navigateToHomeOrUserInput(context, false, true);
                             } else {
@@ -107,8 +110,7 @@ class LoginScreen extends ConsumerWidget {
                           String email = emailController.text;
                           String password = passwordController.text;
 
-                          User? user = await _auth.signUpWithEmailAndPassword(
-                              email, password);
+                          User? user = await _auth.signUpWithEmailAndPassword(email, password);
 
                           if (user != null) {
                             String email = user.email ?? "";
@@ -116,12 +118,10 @@ class LoginScreen extends ConsumerWidget {
                               showToast(message: 'Signed up: $email');
                               String userId = generateUserIdFromEmail(email);
 
-                              Navigator.push(
+                              Navigator.pushReplacementNamed(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (context) => SkinColorOptions(
-                                      userId: userId),
-                                ),
+                                '/userinputmain',
+                                arguments: {'userId': userId}, // Corrected here
                               );
                               navigateToHomeOrUserInput(context, true, false);
                             } else {
@@ -142,4 +142,3 @@ class LoginScreen extends ConsumerWidget {
     );
   }
 }
-

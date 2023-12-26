@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:clothing/utils/selection.dart';
 import 'package:clothing/features/submitForm.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:provider/provider.dart' as provider;
+import 'package:provider/provider.dart';
 
-class MyUserPage extends riverpod.ConsumerWidget {
+class MyUserPage extends StatelessWidget {
   final String userId;
 
-  final selectionModelProvider = riverpod.ChangeNotifierProvider.autoDispose<SelectionModel>((ref) {
-  return SelectionModel();
-  });
   MyUserPage({required this.userId});
 
   @override
-  Widget build(BuildContext context, riverpod.WidgetRef ref) { // Change here
-    final selectionModel = ref.watch(selectionModelProvider);
+  Widget build(BuildContext context) {
+    final selectionModel = Provider.of<SelectionModel>(context);
 
     final PageController _pageController = PageController();
     int _currentPage = 0;
@@ -25,9 +20,7 @@ class MyUserPage extends riverpod.ConsumerWidget {
           duration: Duration(milliseconds: 500), curve: Curves.ease);
     }
 
-    void _updateUserSelections({
-      required SelectionModel selectionModel,
-    }) {
+    void _updateUserSelections(SelectionModel selectionModel) {
       selectionModel.updateUserInfo(
         name: selectionModel.name,
         age: selectionModel.age,
@@ -68,9 +61,7 @@ class MyUserPage extends riverpod.ConsumerWidget {
           ),
           SkinColorOptions(
             onSubmitPressed: () {
-              _updateUserSelections(
-                selectionModel: selectionModel,
-              );
+              _updateUserSelections(selectionModel);
               submitForm(context, userId, selectionModel);
             },
             selectionModel: selectionModel,
@@ -87,8 +78,8 @@ class MyUserPage extends riverpod.ConsumerWidget {
 
 class UserInputPage extends StatefulWidget {
   final Function onContinuePressed;
-  SelectionModel selectionModel;
-  
+  final SelectionModel selectionModel;
+
   UserInputPage({
     required this.onContinuePressed,
     required this.selectionModel,
@@ -96,14 +87,13 @@ class UserInputPage extends StatefulWidget {
 
   @override
   _UserInputPageState createState() => _UserInputPageState();
-  
 }
 
 class _UserInputPageState extends State<UserInputPage> {
   @override
   Widget build(BuildContext context) {
-    final selectionModel = widget.selectionModel; // Directly use the passed selectionModel
-    String _selectedGender = 'Other';
+    final selectionModel = widget.selectionModel;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('User Input'),
@@ -117,21 +107,23 @@ class _UserInputPageState extends State<UserInputPage> {
               decoration: InputDecoration(labelText: 'Enter your name'),
             ),
             TextField(
-              onChanged: (value) => selectionModel.age = int.tryParse(value) ?? 0,
+              onChanged: (value) =>
+                  selectionModel.age = int.tryParse(value) ?? 0,
               decoration: InputDecoration(labelText: 'Enter your age'),
               keyboardType: TextInputType.number,
             ),
             SizedBox(height: 20),
             DropdownButton<String>(
               hint: Text('Select Gender'),
-              value: selectionModel.gender,
-              onChanged: (String? gender) {
-                setState(() {
-                    _selectedGender = gender ?? 'Other';
-                    selectionModel.gender = _selectedGender; // Update the model too, if needed
-                  });
-                },
-              items: ['Male', 'Female','Other']
+              value: selectionModel.gender.isNotEmpty
+                  ? selectionModel.gender
+                  : null,
+              onChanged: (String? selectedGender) {
+                if (selectedGender != null) {
+                  selectionModel.updateGender(selectedGender);
+                }
+              },
+              items: ['Male', 'Female', 'Other']
                   .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -141,8 +133,7 @@ class _UserInputPageState extends State<UserInputPage> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () async {
-                
+              onPressed: () {
                 widget.onContinuePressed();
               },
               child: Text('Continue'),
@@ -168,11 +159,10 @@ class BodyTypeOptions extends StatefulWidget {
 }
 
 class _BodyTypeOptionsState extends State<BodyTypeOptions> {
-  SelectionModel _selectionModel = SelectionModel();
   String? _selectedOption;
 
   void _updateUserSelection(String selectedOption) {
-    _selectionModel.bodyTypeOption = selectedOption; // Store the selected body type
+    widget.selectionModel.bodyTypeOption = selectedOption;
     setState(() {
       _selectedOption = selectedOption;
     });
@@ -235,8 +225,7 @@ class _BodyTypeOptionsState extends State<BodyTypeOptions> {
               colorFilter: isSelected
                   ? ColorFilter.mode(
                       Colors.black.withOpacity(0.5), BlendMode.darken)
-                  : ColorFilter.mode(Colors.transparent,
-                      BlendMode.clear),
+                  : ColorFilter.mode(Colors.transparent, BlendMode.clear),
               child: Image.asset(
                 imagePath,
                 width: 100,
@@ -260,11 +249,10 @@ class SkinColorOptions extends StatefulWidget {
   final SelectionModel? selectionModel;
   final String userId;
 
-
   SkinColorOptions({
     this.onSubmitPressed,
     this.selectionModel,
-    required this.userId,// New parameter
+    required this.userId,
   });
 
   @override
@@ -272,16 +260,14 @@ class SkinColorOptions extends StatefulWidget {
 }
 
 class _SkinColorOptionsState extends State<SkinColorOptions> {
-  SelectionModel _selectionModel = SelectionModel();
   String? _selectedOption;
 
   void _updateUserSelection(String selectedOption) {
-  setState(() {
-    _selectedOption = selectedOption;
-    _selectionModel.skinColorOption = selectedOption; // Store the selected skin color
-  });
-}
-
+    setState(() {
+      _selectedOption = selectedOption;
+      widget.selectionModel!.skinColorOption = selectedOption;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -293,36 +279,38 @@ class _SkinColorOptionsState extends State<SkinColorOptions> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            buildClickableImage('assets/images/skin_color1.png', 'Warm', 'warm'),
+            buildClickableImage(
+                'assets/images/skin_color1.png', 'Warm', 'warm'),
             SizedBox(height: 20),
-            buildClickableImage('assets/images/skin_color2.png', 'Neutral', 'neutral'),
+            buildClickableImage(
+                'assets/images/skin_color2.png', 'Neutral', 'neutral'),
             SizedBox(height: 20),
-            buildClickableImage('assets/images/skin_color3.png', 'Cool', 'cool'),
+            buildClickableImage(
+                'assets/images/skin_color3.png', 'Cool', 'cool'),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 if (_selectedOption != null) {
                   _updateUserSelection(_selectedOption!);
-                  
-                  // Access properties directly from the _selectionModel object
+                  print("userinputmain");
                   print(widget.userId);
-                  print(_selectionModel.name); // Directly access name
-                  print(_selectionModel.age);  // Directly access age
-                  print(_selectionModel.gender); // Directly access gender
-                  print(_selectionModel.skinColorOption);
-                  print(_selectionModel.bodyTypeOption);
+                  print(widget.selectionModel!.name); // Fixed here
+                  print(widget.selectionModel!.age); // Fixed here
+                  print(widget.selectionModel!.gender); // Fixed here
+                  print(widget.selectionModel!.skinColorOption);
+                  print(widget.selectionModel!.bodyTypeOption);
 
-                  if (_selectionModel.bodyTypeOption != null &&
-                      _selectionModel.skinColorOption != null &&
+                  if (widget.selectionModel!.bodyTypeOption != null &&
+                      widget.selectionModel!.skinColorOption != null &&
                       widget.userId != null) {
                     submitForm(
                       context,
                       widget.userId,
-                      _selectionModel,
+                      widget.selectionModel!, // Fixed here
                     );
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Please complete all selections')));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Please complete all selections')));
                   }
                   widget.onSubmitPressed!();
                 } else {
@@ -338,7 +326,8 @@ class _SkinColorOptionsState extends State<SkinColorOptions> {
     );
   }
 
-  Widget buildClickableImage(String imagePath, String optionText, String optionIndex) {
+  Widget buildClickableImage(
+      String imagePath, String optionText, String optionIndex) {
     bool isSelected = _selectedOption == optionIndex;
 
     return Column(
@@ -362,8 +351,7 @@ class _SkinColorOptionsState extends State<SkinColorOptions> {
               colorFilter: isSelected
                   ? ColorFilter.mode(
                       Colors.black.withOpacity(0.5), BlendMode.darken)
-                  : ColorFilter.mode(Colors.transparent,
-                      BlendMode.clear),
+                  : ColorFilter.mode(Colors.transparent, BlendMode.clear),
               child: Image.asset(
                 imagePath,
                 width: 100,
