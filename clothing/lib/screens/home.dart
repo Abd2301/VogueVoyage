@@ -4,11 +4,18 @@ import 'user_info.dart';
 
 
 class Home extends StatefulWidget {
+  final String? imagePath;
+  final int initialPage;
+  Home({this.imagePath, required this.initialPage});
+
   @override
   _HomeState createState() => _HomeState();
+  
+
 }
 
 class _HomeState extends State<Home> {
+  String? userId;
   late PageController _pageController;
   String selectedApparelType1 = 'Accessories';
   String selectedApparelType2 = 'Outwears';
@@ -21,6 +28,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _currentPage);
+     _currentPage = widget.initialPage;
   }
 
 
@@ -82,7 +90,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
 
-                UserInfoScreen(),  // UserInfoScreen as the third page
+                UserInfoScreen(userId: userId ?? 'defaultUserIdValue'),  // UserInfoScreen as the third page
               ],
             ),
           ),

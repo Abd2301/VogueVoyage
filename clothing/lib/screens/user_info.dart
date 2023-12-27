@@ -1,50 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:clothing/utils/selection.dart'; // Import your SelectionModel file
+import 'package:clothing/utils/selection.dart'; 
 import 'package:clothing/features/submitForm.dart';
 
 class UserInfoScreen extends StatefulWidget {
+  final String? userId;
+
+  const UserInfoScreen({Key? key, this.userId}) : super(key: key);
+
   @override
   _UserInfoScreenState createState() => _UserInfoScreenState();
 }
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _ageController = TextEditingController();
-  TextEditingController _genderController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
+  String? _gender;
   String? _bodyShape;
   String? _skinTone;
-  SelectionModel? selectionModel;
+  late SelectionModel selectionModel;
 
-  // Dropdown options
-  List<String> bodyShapes = ['Ectomorph', 'Mesomorph', 'Endomorph'];
-  List<String> skinTones = ['Neutral', 'Warm', 'Cool'];
+  final List<String> bodyShapes = ['Ectomorph', 'Mesomorph', 'Endomorph'];
+  final List<String> skinTones = ['Neutral', 'Warm', 'Cool'];
+  final List<String> genders = ['Male', 'Female', 'Other'];
 
   @override
   void initState() {
     super.initState();
-    // Initialize the selectionModel after the widget has been created
     selectionModel = context.read<SelectionModel>();
     _loadUserData();
   }
 
-  _loadUserData() {
-    if (selectionModel != null) {
-      _nameController.text = selectionModel!.name ?? '';
-      _ageController.text = selectionModel!.age?.toString() ?? '';
-      _genderController.text = selectionModel!.gender ?? '';
-
-      // Check if the values exist in the lists before setting
-      _bodyShape = bodyShapes.contains(selectionModel!.bodyTypeOption)
-          ? selectionModel!.bodyTypeOption
-          : null;
-
-      _skinTone = skinTones.contains(selectionModel!.skinColorOption)
-          ? selectionModel!.skinColorOption
-          : null;
-    }
+  void _loadUserData() {
+    _nameController.text = selectionModel.name ?? '';
+    _ageController.text = selectionModel.age?.toString() ?? '';
+    _gender = genders.contains(selectionModel.gender) ? selectionModel.gender : null;
+    _bodyShape = bodyShapes.contains(selectionModel.bodyTypeOption) ? selectionModel.bodyTypeOption : null;
+    _skinTone = skinTones.contains(selectionModel.skinColorOption) ? selectionModel.skinColorOption : null;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -61,57 +54,37 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               controller: _nameController,
               decoration: InputDecoration(labelText: 'Name'),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             TextField(
               controller: _ageController,
               decoration: InputDecoration(labelText: 'Age'),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 16.0),
-            TextField(
-              controller: _genderController,
-              decoration: InputDecoration(labelText: 'Gender'),
+            const SizedBox(height: 16.0),
+            DropdownButton<String>(
+              value: _gender,
+              items: genders.map((String value) => DropdownMenuItem<String>(value: value, child: Text(value))).toList(),
+              onChanged: (String? newValue) => setState(() => _gender = newValue),
+              isExpanded: true,
+              hint: const Text('Select Gender'),
             ),
-            // Dropdown for Body Shape
-            SizedBox(height: 16.0),
-            Text('Body Shape',
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16.0),
+            const Text('Body Shape', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
             DropdownButton<String>(
               value: _bodyShape,
-              items: bodyShapes.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _bodyShape = newValue;
-                });
-              },
+              items: bodyShapes.map((String value) => DropdownMenuItem<String>(value: value, child: Text(value))).toList(),
+              onChanged: (String? newValue) => setState(() => _bodyShape = newValue),
               isExpanded: true,
-              hint: Text('Select Body Shape'),
+              hint: const Text('Select Body Shape'),
             ),
-
-            // Dropdown for Skin Tone
-            SizedBox(height: 16.0),
-            Text('Skin Tone',
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16.0),
+            const Text('Skin Tone', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
             DropdownButton<String>(
               value: _skinTone,
-              items: skinTones.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _skinTone = newValue;
-                });
-              },
+              items: skinTones.map((String value) => DropdownMenuItem<String>(value: value, child: Text(value))).toList(),
+              onChanged: (String? newValue) => setState(() => _skinTone = newValue),
               isExpanded: true,
-              hint: Text('Select Skin Tone'),
+              hint: const Text('Select Skin Tone'),
             ),
             Spacer(),
             Align(
@@ -119,8 +92,10 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               child: Padding(
                 padding: const EdgeInsets.only(right: 16.0),
                 child: ElevatedButton(
-                  onPressed: () => submitForm,
-                  child: Text('Save'),
+                  onPressed: () async {
+                    submitForm(context, widget.userId!, selectionModel);
+                  },
+                  child: const Text('Save'),
                 ),
               ),
             ),

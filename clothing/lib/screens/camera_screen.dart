@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 
@@ -35,49 +37,33 @@ void initState() {
   });
 }
   @override
-  Widget build(BuildContext context) {
-    if (!_controller.value.isInitialized) {
-      return Container();
-    }
+Widget build(BuildContext context) {
+  if (!_controller.value.isInitialized) {
+    return Container();
+  }
 
-    return Stack(
-      children: [
-        CameraPreview(_controller),
-        if (_showRetryButton)
-          Positioned(
-            bottom: 20,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () => _retryCapture(),
-                  child: Text('Retry'),
-                ),
-                ElevatedButton(
-                  onPressed: () => _generateOutfit(),
-                  child: Text('Generate'),
-                ),
-              ],
-            ),
-          ),
-        
-        // Add the submit button here
+  return Stack(
+    children: [
+      CameraPreview(_controller),
+      if (_showRetryButton)
         Positioned(
-          bottom: 60, // Adjust position as needed
+          bottom: 20,
           left: 0,
           right: 0,
-          child: Center(
-            child: ElevatedButton(
-              onPressed: () => _submitPhoto(),  // Define the function for submission
-              child: Text('Submit Photo'),
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center, // Center the button
+            children: [
+              ElevatedButton(
+                onPressed: () => _generateOutfit(),
+                child: Text('Generate'),
+              ),
+            ],
           ),
         ),
-      ],
-    );
-  }
+    ],
+  );
+}
+
 
   Future<void> _retryCapture() async {
     setState(() {
@@ -97,14 +83,11 @@ void initState() {
   try {
     final image = await _controller.takePicture();
 
-    // Navigate back to the main carousels page
-    widget.pageController.animateToPage(
-      2,  // The index of the main carousels page in your PageView
-      duration: Duration(milliseconds: 300),
-      curve: Curves.easeOut,
+    // Show the image preview dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => ImagePreviewDialog(imagePath: image.path),
     );
-
-    // Optionally, you can show a dialog or some feedback to the user here
 
   } catch (e) {
     print(e);
@@ -116,5 +99,62 @@ void initState() {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+}
+
+class ImagePreviewDialog extends StatelessWidget {
+  final String imagePath;
+
+  ImagePreviewDialog({required this.imagePath});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.0),
+      ),
+      elevation: 0.0,
+      backgroundColor: Colors.transparent,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.brown[400],  // Coffee color
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.file(File(imagePath)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    // Navigate to home page with index=1
+                    Navigator.pop(context); // Close the dialog
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Home(
+                          imagePath: imagePath,
+                          initialPage: 1,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text('Continue'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    // Handle 'Retry' button action
+                    Navigator.pop(context); // Close the dialog
+                  },
+                  child: Text('Retry'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

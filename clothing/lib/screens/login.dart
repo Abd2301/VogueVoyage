@@ -85,18 +85,23 @@ class LoginScreen extends StatelessWidget {
 
                           User? user = await _auth.signInWithEmailAndPassword(email, password);
 
+                          
                           if (user != null) {
                             String email = user.email ?? "";
                             if (email.isNotEmpty) {
                               showToast(message: 'Signed in: $email');
                               String userId = generateUserIdFromEmail(email);
-
+                              
+                              // First navigate to home
+                              navigateToHomeOrUserInput(context, false, true);
+                              
+                              // Then navigate to userinputmain
                               Navigator.pushReplacementNamed(
                                 context,
                                 '/userinputmain',
-                                arguments: {'userId': userId}, // Corrected here
+                                arguments: {'userId': userId},
                               );
-                              navigateToHomeOrUserInput(context, false, true);
+                              
                             } else {
                               showToast(message: 'Sign in failed');
                             }
@@ -117,13 +122,14 @@ class LoginScreen extends StatelessWidget {
                             if (email.isNotEmpty) {
                               showToast(message: 'Signed up: $email');
                               String userId = generateUserIdFromEmail(email);
-
+                              navigateToHomeOrUserInput(context, true, false);
                               Navigator.pushReplacementNamed(
                                 context,
                                 '/userinputmain',
+                                
                                 arguments: {'userId': userId}, // Corrected here
                               );
-                              navigateToHomeOrUserInput(context, true, false);
+
                             } else {
                               showToast(message: 'Sign up failed');
                             }

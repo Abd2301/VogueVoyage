@@ -95,9 +95,8 @@ class _UserInputPageState extends State<UserInputPage> {
     final selectionModel = widget.selectionModel;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('User Input'),
-      ),
+
+      
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -368,4 +367,18 @@ class _SkinColorOptionsState extends State<SkinColorOptions> {
       ],
     );
   }
+  void navigateToMain() {
+  int? parsedAge = int.tryParse(widget.selectionModel!.age.toString());
+
+  if (parsedAge != null) {
+    Navigator.pushReplacementNamed(
+      context,
+      '/home',
+      arguments: {'userId': widget.userId},  // Passing userId as an argument
+    );
+  } else {
+    print('Invalid age entered');
+  }
+}
+
 }
