@@ -1,0 +1,12 @@
+dress
+hat
+hoodie
+jeans
+outwear
+pants
+shirt
+shoes
+shorts
+skirt
+top
+tshirt

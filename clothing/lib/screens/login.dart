@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:clothing/features/auth.dart';
 import 'package:clothing/utils/crypt.dart';
-import 'package:provider/provider.dart';
+
 
 
 class UserIdNotifier extends ChangeNotifier {
@@ -20,7 +20,7 @@ class UserIdNotifier extends ChangeNotifier {
 class LoginScreen extends StatelessWidget {
   late final PageController _pageController;
 
-  LoginScreen({Key? key}) : super(key: key) {
+  LoginScreen({super.key}) {
     _pageController = PageController();
   }
 
@@ -92,13 +92,11 @@ class LoginScreen extends StatelessWidget {
                               showToast(message: 'Signed in: $email');
                               String userId = generateUserIdFromEmail(email);
                               
-                              // First navigate to home
-                              navigateToHomeOrUserInput(context, false, true);
-                              
+                     
                               // Then navigate to userinputmain
                               Navigator.pushReplacementNamed(
                                 context,
-                                '/userinputmain',
+                                '/home',
                                 arguments: {'userId': userId},
                               );
                               
@@ -122,7 +120,7 @@ class LoginScreen extends StatelessWidget {
                             if (email.isNotEmpty) {
                               showToast(message: 'Signed up: $email');
                               String userId = generateUserIdFromEmail(email);
-                              navigateToHomeOrUserInput(context, true, false);
+                              
                               Navigator.pushReplacementNamed(
                                 context,
                                 '/userinputmain',

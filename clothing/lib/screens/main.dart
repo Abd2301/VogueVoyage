@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'userinputmain.dart';
+import 'user_input.dart';
 import 'login.dart';
 import 'splash.dart';
 import 'home.dart';
@@ -18,8 +18,8 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SelectionModel()),
-        ChangeNotifierProvider(create: (_) => UserIdNotifier()),  // Hypothetical User Provider
-        // Add more providers here if needed
+        ChangeNotifierProvider(create: (_) => UserIdNotifier()),  
+
       ],
       child: MyApp(),
     ),
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/splash': (context) => SplashScreen(),
         '/login': (context) => LoginScreen(),
-        '/home': (context) => Home(),
+        '/home': (context) => Home(initialPage: 1,),
         '/userinputmain': (context) => MyUserPage(userId: ''),
       },
     );

@@ -6,15 +6,17 @@ import 'user_info.dart';
 class Home extends StatefulWidget {
   final String? imagePath;
   final int initialPage;
+
+
   Home({this.imagePath, required this.initialPage});
 
   @override
   _HomeState createState() => _HomeState();
   
-
 }
 
 class _HomeState extends State<Home> {
+  String? label;
   String? userId;
   late PageController _pageController;
   String selectedApparelType1 = 'Accessories';
@@ -29,6 +31,7 @@ class _HomeState extends State<Home> {
     super.initState();
     _pageController = PageController(initialPage: _currentPage);
      _currentPage = widget.initialPage;
+     label = widget.label;
   }
 
 
@@ -87,6 +90,7 @@ class _HomeState extends State<Home> {
                     selectedApparelType3: selectedApparelType3,
                     selectedApparelType4: selectedApparelType4,
                     selectedApparelType5: selectedApparelType5,
+                    label: label,
                   ),
                 ),
 
@@ -126,6 +130,8 @@ class MyCarousels extends StatelessWidget {
   final String selectedApparelType3;
   final String selectedApparelType4;
   final String selectedApparelType5;
+  final String? label;
+
 
   const MyCarousels({
     required this.selectedApparelType1,
@@ -133,6 +139,7 @@ class MyCarousels extends StatelessWidget {
     required this.selectedApparelType3,
     required this.selectedApparelType4,
     required this.selectedApparelType5,
+    this.label
   });
 
   @override

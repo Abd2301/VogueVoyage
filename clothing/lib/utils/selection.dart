@@ -12,25 +12,22 @@ class SelectionModel with ChangeNotifier {
     this.age = 0,
     this.gender = '',
     this.bodyTypeOption = '',
-    this.skinColorOption = '', 
+    this.skinColorOption = '',
   });
 
   void updateUserInfo({
-    required String name,
-    required int? age,
-    required String gender,
-    required String bodyTypeOption,
-    required String skinColorOption,
-  }) {
-    this.name = name;
-    this.age = age!;
-    this.gender = gender;
-    this.bodyTypeOption = bodyTypeOption;
-    this.skinColorOption = skinColorOption;
-    notifyListeners(); // Notify listeners to rebuild widgets listening to this model.
-  }
-  void updateGender(String newGender) {
-  gender = newGender;
-  notifyListeners(); // Notify listeners to rebuild widgets listening to this model.
- }
+  String? name,
+  int? age,
+  String? gender,
+  String? bodyTypeOption,
+  String? skinColorOption,
+}) {
+  if (name != null) this.name = name;
+  if (age != null) this.age = age;
+  if (gender != null) this.gender = gender;
+  if (bodyTypeOption != null) this.bodyTypeOption = bodyTypeOption;
+  if (skinColorOption != null) this.skinColorOption = skinColorOption;
+  notifyListeners();
+}
+
 }

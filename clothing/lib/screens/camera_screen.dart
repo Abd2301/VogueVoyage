@@ -1,13 +1,13 @@
 import 'dart:io';
-
+import 'package:clothing/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-
+import 'package:clothing/features/model_service.dart';
 
 class CameraScreen extends StatefulWidget {
   final PageController pageController;
 
-  CameraScreen({required this.pageController});
+  const CameraScreen({required this.pageController});
 
   @override
   _CameraScreenState createState() => _CameraScreenState();
@@ -20,80 +20,83 @@ class _CameraScreenState extends State<CameraScreen> {
   bool _showRetryButton = false;
 
   @override
-void initState() {
-  super.initState();
+  void initState() {
+    super.initState();
 
-  // Obtain a list of the available cameras on the device.
-  availableCameras().then((cameras) {
-    if (cameras.isNotEmpty) {
-      _controller = CameraController(cameras[0], ResolutionPreset.medium);
-      _initializeControllerFuture = _controller.initialize();
-      
-      // Set _showRetryButton to true once the controller is initialized
-      setState(() {
-        _showRetryButton = true;
-      });
-    }
-  });
-}
+    // Obtain a list of the available cameras on the device.
+    availableCameras().then((cameras) {
+      if (cameras.isNotEmpty) {
+        _controller = CameraController(cameras[0], ResolutionPreset.medium);
+        _initializeControllerFuture = _controller.initialize();
+
+        // Set _showRetryButton to true once the controller is initialized
+        setState(() {
+          _showRetryButton = true;
+        });
+      }
+    });
+  }
+
   @override
-Widget build(BuildContext context) {
-  if (!_controller.value.isInitialized) {
-    return Container();
-  }
+  Widget build(BuildContext context) {
+    if (!_controller.value.isInitialized) {
+      return Container();
+    }
 
-  return Stack(
-    children: [
-      CameraPreview(_controller),
-      if (_showRetryButton)
-        Positioned(
-          bottom: 20,
-          left: 0,
-          right: 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center, // Center the button
-            children: [
-              ElevatedButton(
-                onPressed: () => _generateOutfit(),
-                child: Text('Generate'),
-              ),
-            ],
+    return Stack(
+      children: [
+        CameraPreview(_controller),
+        if (_showRetryButton)
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center, // Center the button
+              children: [
+                ElevatedButton(
+                  onPressed: () => _generateOutfit(),
+                  child: Text('Generate'),
+                ),
+              ],
+            ),
           ),
-        ),
-    ],
-  );
-}
-
-
-  Future<void> _retryCapture() async {
-    setState(() {
-      _showRetryButton = false;
-    });
-    _controller.initialize().then((_) {
-      if (!mounted) return;
-      setState(() {});
-    });
-  }
-  void _submitPhoto() {
-    // Logic to submit the photo goes here
-    print('Submitting photo...');
+      ],
+    );
   }
 
   Future<void> _generateOutfit() async {
-  try {
-    final image = await _controller.takePicture();
+    try {
+      final image = await _controller.takePicture();
+      await ModelService.loadModel();
 
-    // Show the image preview dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => ImagePreviewDialog(imagePath: image.path),
-    );
+      var prediction = await ModelService.runInference(File(image.path));
 
-  } catch (e) {
-    print(e);
+      // Handle prediction result as required
+      if (prediction != null) {
+        var labelIndex = prediction['label'];
+        var confidence = prediction['confidence'];
+
+        String? label = await File('assets/labels.txt')
+            .readAsLines()
+            .then((lines) => lines[labelIndex]);
+
+        // Show the prediction
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Home(
+              imagePath: image.path,
+              initialPage: 1,
+              label: label,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      print(e);
+    }
   }
-}
-
 
   @override
   void dispose() {
@@ -117,7 +120,7 @@ class ImagePreviewDialog extends StatelessWidget {
       backgroundColor: Colors.transparent,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.brown[400],  // Coffee color
+          color: Colors.brown[400], // Coffee color
           borderRadius: BorderRadius.circular(16.0),
         ),
         child: Column(
