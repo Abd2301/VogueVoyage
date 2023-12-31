@@ -2,17 +2,15 @@ import 'package:flutter/material.dart';
 import 'camera_screen.dart';
 import 'user_info.dart';
 
-
 class Home extends StatefulWidget {
   final String? imagePath;
   final int initialPage;
+  final String? label;
 
-
-  Home({this.imagePath, required this.initialPage});
+  Home({this.imagePath, required this.initialPage, this.label});
 
   @override
   _HomeState createState() => _HomeState();
-  
 }
 
 class _HomeState extends State<Home> {
@@ -25,16 +23,14 @@ class _HomeState extends State<Home> {
   String selectedApparelType4 = 'Shorts';
   String selectedApparelType5 = 'Shoes';
   int _currentPage = 1; // Assuming you want to start from the CameraScreen
-  
+
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _currentPage);
-     _currentPage = widget.initialPage;
-     label = widget.label;
+    _currentPage = widget.initialPage;
+    label = widget.label;
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +54,7 @@ class _HomeState extends State<Home> {
             );
           }
         },
-
-      child: Column(
+        child: Column(
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -72,39 +67,41 @@ class _HomeState extends State<Home> {
               ),
             ),
             Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentPage = index;
-                });
-              },
-              children: [
-                CameraScreen(pageController: _pageController),  // CameraScreen as the second page
-                
-                Padding(
-                  padding: EdgeInsets.all(36.0),
-                  child: MyCarousels(
-                    selectedApparelType1: selectedApparelType1,
-                    selectedApparelType2: selectedApparelType2,
-                    selectedApparelType3: selectedApparelType3,
-                    selectedApparelType4: selectedApparelType4,
-                    selectedApparelType5: selectedApparelType5,
-                    label: label,
-                  ),
-                ),
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                children: [
+                  CameraScreen(
+                      pageController:
+                          _pageController), // CameraScreen as the second page
 
-                UserInfoScreen(userId: userId ?? 'defaultUserIdValue'),  // UserInfoScreen as the third page
-              ],
+                  Padding(
+                    padding: EdgeInsets.all(36.0),
+                    child: MyCarousels(
+                      selectedApparelType1: selectedApparelType1,
+                      selectedApparelType2: selectedApparelType2,
+                      selectedApparelType3: selectedApparelType3,
+                      selectedApparelType4: selectedApparelType4,
+                      selectedApparelType5: selectedApparelType5,
+                      label: label,
+                    ),
+                  ),
+
+                  UserInfoScreen(
+                      userId: userId ??
+                          'defaultUserIdValue'), // UserInfoScreen as the third page
+                ],
+              ),
             ),
-          ),
-                    
           ],
         ),
       ),
     );
   }
-
 
   List<String> _getApparelTypesForBox(int boxNumber) {
     switch (boxNumber) {
@@ -132,15 +129,13 @@ class MyCarousels extends StatelessWidget {
   final String selectedApparelType5;
   final String? label;
 
-
-  const MyCarousels({
-    required this.selectedApparelType1,
-    required this.selectedApparelType2,
-    required this.selectedApparelType3,
-    required this.selectedApparelType4,
-    required this.selectedApparelType5,
-    this.label
-  });
+  const MyCarousels(
+      {required this.selectedApparelType1,
+      required this.selectedApparelType2,
+      required this.selectedApparelType3,
+      required this.selectedApparelType4,
+      required this.selectedApparelType5,
+      this.label});
 
   @override
   Widget build(BuildContext context) {

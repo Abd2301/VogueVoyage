@@ -66,37 +66,44 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   Future<void> _generateOutfit() async {
-    try {
-      final image = await _controller.takePicture();
-      await ModelService.loadModel();
+  try {
+    final image = await _controller.takePicture();
+    await ModelService.loadModel();
 
-      var prediction = await ModelService.runInference(File(image.path));
+    var prediction = await ModelService.runInference(File(image.path));
 
-      // Handle prediction result as required
-      if (prediction != null) {
-        var labelIndex = prediction['label'];
-        var confidence = prediction['confidence'];
+    // Handle prediction result as required
+    if (prediction != null) {
+      var labelIndex = prediction['label'];
+      var confidence = prediction['confidence'];
 
-        String? label = await File('assets/labels.txt')
+      String? label;
+      
+      // Thresholding based on confidence
+      if (confidence >= 0.6) { // If confidence is 60% or above
+        label = await File('assets/labels.txt')
             .readAsLines()
             .then((lines) => lines[labelIndex]);
-
-        // Show the prediction
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Home(
-              imagePath: image.path,
-              initialPage: 1,
-              label: label,
-            ),
-          ),
-        );
+      } else { // If confidence is below 60%, set default label to "T-shirt"
+        label = "T-shirt";
       }
-    } catch (e) {
-      print(e);
+
+      // Show the prediction
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Home(
+            imagePath: image.path,
+            initialPage: 1,
+            label: label,
+          ),
+        ),
+      );
     }
+  } catch (e) {
+    print(e);
   }
+}
 
   @override
   void dispose() {
