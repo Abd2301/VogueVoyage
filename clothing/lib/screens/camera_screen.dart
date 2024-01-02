@@ -66,44 +66,45 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   Future<void> _generateOutfit() async {
-  try {
-    final image = await _controller.takePicture();
-    await ModelService.loadModel();
+    try {
+      final image = await _controller.takePicture();
+      await ModelService.loadModel();
 
-    var prediction = await ModelService.runInference(File(image.path));
-
-    // Handle prediction result as required
-    if (prediction != null) {
-      var labelIndex = prediction['label'];
-      var confidence = prediction['confidence'];
-
+      var prediction = await ModelService.runInference(File(image.path));
       String? label;
-      
-      // Thresholding based on confidence
-      if (confidence >= 0.6) { // If confidence is 60% or above
-        label = await File('assets/labels.txt')
-            .readAsLines()
-            .then((lines) => lines[labelIndex]);
-      } else { // If confidence is below 60%, set default label to "T-shirt"
-        label = "T-shirt";
-      }
+      List<String> suggestions = [];
+      // Handle prediction result as required
+      if (prediction != null) {
+        var labelIndex = prediction['label'];
+        var confidence = prediction['confidence'];
 
-      // Show the prediction
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Home(
-            imagePath: image.path,
-            initialPage: 1,
-            label: label,
+        // Thresholding based on confidence
+        if (confidence >= 0.6) {
+          // If confidence is 60% or above
+          label = await File('assets/labels.txt')
+              .readAsLines()
+              .then((lines) => lines[labelIndex]);
+        } else {
+          // If confidence is below 60%, set default label to "T-shirt"
+          label = "T-shirt";
+        }
+
+        // Show the prediction
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Home(
+              imagePath: image.path,
+              initialPage: 1,
+              label: label,
+            ),
           ),
-        ),
-      );
+        );
+      }
+    } catch (e) {
+      print(e);
     }
-  } catch (e) {
-    print(e);
   }
-}
 
   @override
   void dispose() {
@@ -114,8 +115,9 @@ class _CameraScreenState extends State<CameraScreen> {
 
 class ImagePreviewDialog extends StatelessWidget {
   final String imagePath;
+  final String? label;
 
-  ImagePreviewDialog({required this.imagePath});
+  ImagePreviewDialog({required this.imagePath,this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -147,6 +149,7 @@ class ImagePreviewDialog extends StatelessWidget {
                         builder: (context) => Home(
                           imagePath: imagePath,
                           initialPage: 1,
+                          label: label,
                         ),
                       ),
                     );

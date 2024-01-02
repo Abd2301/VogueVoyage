@@ -11,6 +11,7 @@ class Home extends StatefulWidget {
 
   @override
   _HomeState createState() => _HomeState();
+
 }
 
 class _HomeState extends State<Home> {
@@ -261,12 +262,11 @@ class _CarouselWithButtonState extends State<CarouselWithButton> {
   List<String> _getImagesForApparelType(String type) {
     // Logic to get the list of images based on the selected type
     // You should replace this with your own logic based on the folder structure
-    return [
-      'assets/$type/image1.jpg',
-      'assets/$type/image2.jpg',
-      'assets/$type/image3.jpg',
-      // Add more images as needed
-    ];
+    return ImageRules.getImageForCarousel(
+      carouselType: widget.carouselType,
+      label: type,
+      userModel: // Pass the appropriate userModel here
+    );
   }
 }
 
