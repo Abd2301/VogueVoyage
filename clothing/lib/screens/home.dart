@@ -1,18 +1,17 @@
-import 'package:clothing/utils/selection.dart';
 import 'package:flutter/material.dart';
 import 'camera_screen.dart';
 import 'user_info.dart';
-import 'package:clothing/features/image_rules.dart';
 
 class Home extends StatefulWidget {
   final String? imagePath;
   final int initialPage;
   final String? label;
-  SelectionModel? selectionModel;
-  Home({this.selectionModel, this.imagePath, required this.initialPage, this.label});
+
+  Home({this.imagePath, required this.initialPage, this.label});
 
   @override
   _HomeState createState() => _HomeState();
+
 }
 
 class _HomeState extends State<Home> {
@@ -25,8 +24,6 @@ class _HomeState extends State<Home> {
   String selectedApparelType4 = 'Shorts';
   String selectedApparelType5 = 'Shoes';
   int _currentPage = 1; // Assuming you want to start from the CameraScreen
-  String? selectedOccasion = 'Casual'; // Default value
-  String? selectedApparel = 'T-Shirt'; // Default value
 
   @override
   void initState() {
@@ -70,59 +67,36 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: () => _showOccasionMenu(context),
-                  child: Text(selectedOccasion!),
-                ),
-                ElevatedButton(
-                  onPressed: () => _showApparelMenu(context),
-                  child: Text(selectedApparel!),
-                ),
-              ],
-            ),
             Expanded(
               child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentPage = index;
-                    });
-                  },
-                  children: [
-                    CameraScreen(
-                        pageController:
-                            _pageController), // CameraScreen as the second page
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                children: [
+                  CameraScreen(
+                      pageController:
+                          _pageController), // CameraScreen as the second page
 
-                    Padding(
-                      padding: EdgeInsets.all(36.0),
-                      child: Column(
-                        children: [
-                          MyCarousels(
-                            selectedApparelType1: selectedApparelType1,
-                            selectedApparelType2: selectedApparelType2,
-                            selectedApparelType3: selectedApparelType3,
-                            selectedApparelType4: selectedApparelType4,
-                            selectedApparelType5: selectedApparelType5,
-                            label: label,
-                          ),
-                          SizedBox(
-                              height:
-                                  20), // Add some space between the carousel and the container
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 16.0, horizontal: 8.0),
-                            child: Text(
-                              getDynamicTextBasedOnRule(widget.selectionModel!.bodyTypeOption), // Replace with the actual method to get dynamic text
-                              style: TextStyle(fontSize: 18.0),
-                            ),
-                          ),
-                        ],
-                      ),
+                  Padding(
+                    padding: EdgeInsets.all(36.0),
+                    child: MyCarousels(
+                      selectedApparelType1: selectedApparelType1,
+                      selectedApparelType2: selectedApparelType2,
+                      selectedApparelType3: selectedApparelType3,
+                      selectedApparelType4: selectedApparelType4,
+                      selectedApparelType5: selectedApparelType5,
+                      label: label,
                     ),
-                  ]),
+                  ),
+
+                  UserInfoScreen(
+                      userId: userId ??
+                          'defaultUserIdValue'), // UserInfoScreen as the third page
+                ],
+              ),
             ),
           ],
         ),
@@ -130,92 +104,12 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void _showOccasionMenu(BuildContext context) async {
-    final String? result = await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: const Text('Select Occasion'),
-          children: [
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 'Casual');
-              },
-              child: Text('Casual'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 'Formal');
-              },
-              child: Text('Formal'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 'Both');
-              },
-              child: Text('Both'),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (result != null) {
-      setState(() {
-        selectedOccasion = result;
-      });
-    }
-  }
-
-  void _showApparelMenu(BuildContext context) async {
-    // You can populate this list based on your needs
-    final List<String> options = [
-      'T-Shirts',
-      'Top',
-      'Shirts',
-      'Jeans',
-      'Pants',
-      'Shoes',
-      'Boots',
-      'Skirts',
-      'Dresses',
-      'Jackets',
-      'Blazers',
-      'Heels',
-      'Hats',
-      'Shorts'
-    ];
-
-    final String? result = await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: const Text('Select Apparel Type'),
-          children: options
-              .map((option) => SimpleDialogOption(
-                    onPressed: () {
-                      Navigator.pop(context, option);
-                    },
-                    child: Text(option),
-                  ))
-              .toList(),
-        );
-      },
-    );
-
-    if (result != null) {
-      setState(() {
-        selectedApparel = result;
-      });
-    }
-  }
-
   List<String> _getApparelTypesForBox(int boxNumber) {
     switch (boxNumber) {
       case 1:
-        return ['Rings', 'Hats', 'Necklace'];
+        return ['Accessories', 'Hat'];
       case 2:
-        return ['Jacket', 'Hoodie', 'Blazer'];
+        return ['Outwears', 'Hoodies'];
       case 3:
         return ['T-Shirt', 'Top', 'Shirt', 'Dress'];
       case 4:
@@ -287,29 +181,6 @@ class _CarouselWithButtonState extends State<CarouselWithButton> {
     items = _getImagesForApparelType(widget.apparelType);
   }
 
-  List<String> _getImagesForApparelType(String apparelType) {
-    // Replace this with your logic to fetch or generate a list of image paths based on the apparel type
-    return [];
-  }
-
-  List<String> _getApparelTypesForBox(int boxNumber) {
-    // Replace this with your logic to return a list of apparel types for the given box number
-    switch (boxNumber) {
-      case 1:
-        return ['Rings', 'Hats', 'Necklace'];
-      case 2:
-        return ['Jacket', 'Hoodie', 'Blazer'];
-      case 3:
-        return ['T-Shirt', 'Top', 'Shirt', 'Dress'];
-      case 4:
-        return ['Shorts', 'Skirt', 'Jeans', 'Pants'];
-      case 5:
-        return ['Shoes'];
-      default:
-        return [];
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -330,7 +201,7 @@ class _CarouselWithButtonState extends State<CarouselWithButton> {
   }
 
   void _showChangeImagesDialog(BuildContext context) async {
-    final List<String> options = _getApparelTypesForBox(widget.apparelType as int);
+    final List<String> options = _getApparelTypesForBox(widget.apparelType);
 
     final selectedOption = await showDialog<String>(
       context: context,
@@ -347,6 +218,54 @@ class _CarouselWithButtonState extends State<CarouselWithButton> {
               .toList(),
         );
       },
+    );
+
+    if (selectedOption != null) {
+      // Update the items list based on the selected option
+      setState(() {
+        items = _getImagesForApparelType(selectedOption);
+      });
+    }
+  }
+
+  List<String> _getApparelTypesForBox(String apparelType) {
+    return _getApparelTypesForBoxNumber(apparelType);
+  }
+
+  List<String> _getApparelTypesForBoxNumber(String apparelType) {
+    // Your logic for each box
+    switch (apparelType) {
+      case 'Neckwear':
+      case 'Ring':
+      case 'Hat':
+        return ['Ring', 'Hat', 'Neckwear'];
+      case 'Outwears':
+      case 'Hoodies':
+        return ['Outwears', 'Hoodies'];
+      case 'T-Shirt':
+      case 'Top':
+      case 'Shirt':
+      case 'Dress':
+        return ['T-Shirt', 'Top', 'Shirt', 'Dress'];
+      case 'Shorts':
+      case 'Skirt':
+      case 'Jeans':
+      case 'Pants':
+        return ['Shorts', 'Skirt', 'Jeans', 'Pants'];
+      case 'Shoes':
+        return ['Shoes'];
+      default:
+        return [];
+    }
+  }
+
+  List<String> _getImagesForApparelType(String type) {
+    // Logic to get the list of images based on the selected type
+    // You should replace this with your own logic based on the folder structure
+    return ImageRules.getImageForCarousel(
+      carouselType: widget.carouselType,
+      label: type,
+      userModel: // Pass the appropriate userModel here
     );
   }
 }

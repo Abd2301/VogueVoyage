@@ -1,61 +1,43 @@
 import 'package:clothing/utils/selection.dart';
-import 'package:clothing/screens/home.dart';
 
 class ImageRules {
   static String getImageForCarousel({
     required String carouselType,
     required String label,
-    required String color,
-    required SelectionModel selectionModel,
+    required SelectionModel userModel,
   }) {
-    // Extracting variables from the selectionModel
-    String bodyTypeOption = selectionModel.bodyTypeOption;
-    String skinColorOption = selectionModel.skinColorOption;
-    String recommendedApparelType = getRecommendedApparelType(label);
-    // Get clothing recommendations based on user selections
- 
-  List<String> recommendations = [];
-  String combinedString(String color, String label) {
-  return color + label;
-}
+    // Extracting variables from the userModel
+    String bodyTypeOption = userModel.bodyTypeOption;
+    String skinColorOption = userModel.skinColorOption;
 
-  // Logic for selecting images based on carouselType, label, color, and recommendations
-  // For example:
-  if (recommendedApparelType == 'Hat') {
-    recommendations.add('Stylish Hat Image Path');
-  } else if (recommendedApparelType == 'Outwears') {
-    recommendations.add('Cool Jacket Image Path');
+    switch (carouselType) {
+      case 'Accessories':
+        switch (label) {
+          case 'T-shirt':
+            return 'assets/images/accessories/tshirt.jpg';
+          case 'Dress':
+            switch (bodyTypeOption) {
+              case 'Mesomorph':
+                return 'assets/images/accessories/dress_mesomorph.jpg';
+            }
+            break;
+        }
+        break;
+
+      case 'Outwears':
+        switch (skinColorOption) {
+          case 'Warm':
+            return 'assets/images/outwears/warm_tone.jpg';
+        }
+        break;
+
+      // Add more cases as needed
+
+      default:
+        break;
+    }
+
+    // Default return
+    return 'assets/images/default.jpg';
   }
-
-  switch (combinedString) {
-    case 'Redpants':
-      recommendations.add('');
-      recommendations.add('Red Pants Rule Recommendation 2');
-      // ... Add more recommendations for RedPants
-      break;
-
-    case 'Bluejeans':
-      recommendations.add('Blue Jeans Rule Recommendation 1');
-      recommendations.add('Blue Jeans Rule Recommendation 2');
-      // ... Add more recommendations for BlueJeans
-      break;
-
-    // Add more cases as needed
-    default:
-      // Handle the default case if the combined string does not match any case
-      break;
-  }
-    return 'assets/images/logo.jpg'; // Placeholder. Implement your logic to return the actual image path.
-  }
-
-  
-    
-
-    return recommendations;
-  }
-  String getDynamicTextBasedOnRule(String bodyTypeOption) {
-  // Implement your rule-based algorithm here
-  // Return the dynamically updated text based on the bodyTypeOption
-  return "Your dynamic text based on the rule and bodyTypeOption";
-}
 }
