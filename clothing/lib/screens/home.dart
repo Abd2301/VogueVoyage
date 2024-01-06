@@ -1,40 +1,54 @@
+import 'package:clothing/utils/recos.dart';
+import 'package:clothing/utils/selection.dart';
 import 'package:flutter/material.dart';
 import 'camera_screen.dart';
-import 'user_info.dart';
+import 'package:clothing/utils/adjustments.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   final String? imagePath;
   final int initialPage;
-  final String? label;
+  SelectionModel? selectionModel;
+  RecommendationModel? recommendationModel;
 
-  Home({this.imagePath, required this.initialPage, this.label});
+
+  Home({
+    this.recommendationModel,
+    this.selectionModel,
+    this.imagePath,
+    required this.initialPage,
+  });
 
   @override
   _HomeState createState() => _HomeState();
-
 }
 
 class _HomeState extends State<Home> {
-  String? label;
   String? userId;
   late PageController _pageController;
-  String selectedApparelType1 = 'Accessories';
-  String selectedApparelType2 = 'Outwears';
-  String selectedApparelType3 = 'T-Shirt';
-  String selectedApparelType4 = 'Shorts';
-  String selectedApparelType5 = 'Shoes';
   int _currentPage = 1; // Assuming you want to start from the CameraScreen
+  String? selectedOccasion = 'Casual'; // Default value
+  String? selectedApparel = 'T-Shirt'; // Default value
+  late HomeModel homeModel; // Declare but don't initialize yet
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    homeModel =
+        Provider.of<HomeModel>(context); // Now it's safe to access context
+  }
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _currentPage);
     _currentPage = widget.initialPage;
-    label = widget.label;
   }
 
   @override
   Widget build(BuildContext context) {
+    final recommendationModel = Provider.of<RecommendationModel>(context);
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vogue Voyage'),
@@ -67,57 +81,171 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    final selected = _showOccasionMenu(context);
+                    if (selected != null) {
+                      Provider.of<HomeModel>(context, listen: false)
+                          .setOccasion(selected as String);
+                    }
+                  },
+                  child: Text(
+                      Provider.of<HomeModel>(context).occasion ?? 'Occasion'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final selected = await _showApparelMenu(context);
+                    if (selected != null) {
+                      Provider.of<HomeModel>(context, listen: false)
+                          .setApparelInput(selected);
+                    }
+                  },
+                  child: Text(Provider.of<HomeModel>(context).apparelInput ??
+                      'Apparel'),
+                ),
+              ],
+            ),
             Expanded(
               child: PageView(
-                controller: _pageController,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentPage = index;
-                  });
-                },
-                children: [
-                  CameraScreen(
-                      pageController:
-                          _pageController), // CameraScreen as the second page
+                  controller: _pageController,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentPage = index;
+                    });
+                  },
+                  children: [
+                    CameraScreen(
+                        pageController:
+                            _pageController), // CameraScreen as the second page
 
-                  Padding(
-                    padding: EdgeInsets.all(36.0),
-                    child: MyCarousels(
-                      selectedApparelType1: selectedApparelType1,
-                      selectedApparelType2: selectedApparelType2,
-                      selectedApparelType3: selectedApparelType3,
-                      selectedApparelType4: selectedApparelType4,
-                      selectedApparelType5: selectedApparelType5,
-                      label: label,
+                    Padding(
+                      padding: EdgeInsets.all(36.0),
+                      child: Column(
+                        children: [
+                          MyCarousels(
+                            selectedApparelType1:
+                                recommendationModel.selectedApparelType1,
+                            selectedApparelType2:
+                                recommendationModel.selectedApparelType2,
+                            selectedApparelType3:
+                                recommendationModel.selectedApparelType3,
+                            selectedApparelType4:
+                                recommendationModel.selectedApparelType4,
+                            selectedApparelType5:
+                                recommendationModel.selectedApparelType5,
+                          ),
+                          SizedBox(
+                              height:
+                                  20), // Add some space between the carousel and the container
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 16.0, horizontal: 8.0),
+                            child: Text(
+                              getBodyShapeDescription(), 
+                              style: TextStyle(fontSize: 18.0),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-
-                  UserInfoScreen(
-                      userId: userId ??
-                          'defaultUserIdValue'), // UserInfoScreen as the third page
-                ],
-              ),
+                  ]),
             ),
           ],
         ),
       ),
     );
   }
+  String getBodyShapeDescription() {
+    String? bodyShapeOption = widget.selectionModel?.bodyTypeOption;
 
-  List<String> _getApparelTypesForBox(int boxNumber) {
-    switch (boxNumber) {
-      case 1:
-        return ['Accessories', 'Hat'];
-      case 2:
-        return ['Outwears', 'Hoodies'];
-      case 3:
-        return ['T-Shirt', 'Top', 'Shirt', 'Dress'];
-      case 4:
-        return ['Shorts', 'Skirt', 'Jeans', 'Pants'];
-      case 5:
-        return ['Shoes'];
-      default:
-        return [];
+    if (bodyShapeOption == 'Ectomorph') {
+      return 'Ectomorphs are generally leaner and find it harder to gain weight or muscle. They often have a faster metabolism.';
+    } else if (bodyShapeOption == 'Mesomorph') {
+      return 'Mesomorphs tend to have a more athletic build, gaining muscle and losing fat more easily than other body types.';
+    } else if (bodyShapeOption == 'Endomorph') {
+      return 'Endomorphs typically have a higher body fat percentage and may find it more challenging to lose weight.';
+    } else {
+      return 'Body shape information not available.';
+    }
+  }
+  Future _showOccasionMenu(BuildContext context) async {
+    final String? result = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('Select Occasion'),
+          children: [
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 'Casual');
+              },
+              child: Text('Casual'),
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 'Formal');
+              },
+              child: Text('Formal'),
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 'All');
+              },
+              child: Text('All'),
+            ),
+          ],
+        );
+      },
+    );
+
+// Set the selected occasion in HomeModel
+    if (result != null) {
+      Provider.of<HomeModel>(context, listen: false).setOccasion(result);
+    }
+  }
+
+  Future _showApparelMenu(BuildContext context) async {
+    // You can populate this list based on your needs
+    final List<String> options = [
+      'T-Shirts',
+      'Top',
+      'Shirts',
+      'Jeans',
+      'Pants',
+      'Shoes',
+      'Boots',
+      'Skirts',
+      'Dresses',
+      'Jackets',
+      'Blazers',
+      'Heels',
+      'Hats',
+      'Shorts'
+    ];
+
+    final String? result = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('Select Apparel Type'),
+          children: options
+              .map((option) => SimpleDialogOption(
+                    onPressed: () {
+                      Navigator.pop(context, option);
+                    },
+                    child: Text(option),
+                  ))
+              .toList(),
+        );
+      },
+    );
+
+    // Set the selected apparel in HomeModel
+    if (result != null) {
+      Provider.of<HomeModel>(context, listen: false).setApparelInput(result);
     }
   }
 }
@@ -128,15 +256,14 @@ class MyCarousels extends StatelessWidget {
   final String selectedApparelType3;
   final String selectedApparelType4;
   final String selectedApparelType5;
-  final String? label;
 
-  const MyCarousels(
-      {required this.selectedApparelType1,
-      required this.selectedApparelType2,
-      required this.selectedApparelType3,
-      required this.selectedApparelType4,
-      required this.selectedApparelType5,
-      this.label});
+  const MyCarousels({
+    required this.selectedApparelType1,
+    required this.selectedApparelType2,
+    required this.selectedApparelType3,
+    required this.selectedApparelType4,
+    required this.selectedApparelType5,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -181,6 +308,28 @@ class _CarouselWithButtonState extends State<CarouselWithButton> {
     items = _getImagesForApparelType(widget.apparelType);
   }
 
+  List<String> _getImagesForApparelType(String apparelType) {
+    return [];
+  }
+
+  List<String> _getApparelTypesForBox(int boxNumber) {
+    // For apparel type dialog
+    switch (boxNumber) {
+      case 1:
+        return ['Rings', 'Hats', 'Necklace'];
+      case 2:
+        return ['Jacket', 'Hoodie', 'Blazer'];
+      case 3:
+        return ['T-Shirt', 'Top', 'Shirt', 'Dress'];
+      case 4:
+        return ['Shorts', 'Skirt', 'Jeans', 'Pants'];
+      case 5:
+        return ['Shoes', 'Heels', 'Other'];
+      default:
+        return [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -201,7 +350,8 @@ class _CarouselWithButtonState extends State<CarouselWithButton> {
   }
 
   void _showChangeImagesDialog(BuildContext context) async {
-    final List<String> options = _getApparelTypesForBox(widget.apparelType);
+    final List<String> options =
+        _getApparelTypesForBox(widget.apparelType as int);
 
     final selectedOption = await showDialog<String>(
       context: context,
@@ -218,54 +368,6 @@ class _CarouselWithButtonState extends State<CarouselWithButton> {
               .toList(),
         );
       },
-    );
-
-    if (selectedOption != null) {
-      // Update the items list based on the selected option
-      setState(() {
-        items = _getImagesForApparelType(selectedOption);
-      });
-    }
-  }
-
-  List<String> _getApparelTypesForBox(String apparelType) {
-    return _getApparelTypesForBoxNumber(apparelType);
-  }
-
-  List<String> _getApparelTypesForBoxNumber(String apparelType) {
-    // Your logic for each box
-    switch (apparelType) {
-      case 'Neckwear':
-      case 'Ring':
-      case 'Hat':
-        return ['Ring', 'Hat', 'Neckwear'];
-      case 'Outwears':
-      case 'Hoodies':
-        return ['Outwears', 'Hoodies'];
-      case 'T-Shirt':
-      case 'Top':
-      case 'Shirt':
-      case 'Dress':
-        return ['T-Shirt', 'Top', 'Shirt', 'Dress'];
-      case 'Shorts':
-      case 'Skirt':
-      case 'Jeans':
-      case 'Pants':
-        return ['Shorts', 'Skirt', 'Jeans', 'Pants'];
-      case 'Shoes':
-        return ['Shoes'];
-      default:
-        return [];
-    }
-  }
-
-  List<String> _getImagesForApparelType(String type) {
-    // Logic to get the list of images based on the selected type
-    // You should replace this with your own logic based on the folder structure
-    return ImageRules.getImageForCarousel(
-      carouselType: widget.carouselType,
-      label: type,
-      userModel: // Pass the appropriate userModel here
     );
   }
 }

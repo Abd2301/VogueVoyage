@@ -1,3 +1,5 @@
+import 'package:clothing/utils/adjustments.dart';
+import 'package:clothing/utils/recos.dart';
 import 'package:flutter/material.dart';
 import 'user_input.dart';
 import 'login.dart';
@@ -8,6 +10,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:clothing/firebase_options.dart';
 import 'package:provider/provider.dart';
 import 'package:clothing/utils/selection.dart';
+import 'package:clothing/utils/image_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +22,9 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => SelectionModel()),
         ChangeNotifierProvider(create: (_) => UserIdNotifier()),  
-
+        ChangeNotifierProvider(create: (_) => HomeModel()),  
+        ChangeNotifierProvider(create: (_) => RecommendationModel()),
+        ChangeNotifierProvider(create: (_) => ImageDataProvider()),
       ],
       child: MyApp(),
     ),
@@ -39,7 +44,7 @@ class MyApp extends StatelessWidget {
         '/splash': (context) => SplashScreen(),
         '/login': (context) => LoginScreen(),
         '/home': (context) => Home(initialPage: 1,),
-        '/userinputmain': (context) => MyUserPage(userId: ''),
+        '/userinputmain': (context) => MyUserPage(userId:),
       },
     );
   }
