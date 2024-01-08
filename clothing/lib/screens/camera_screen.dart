@@ -137,7 +137,6 @@ class _CameraScreenState extends State<CameraScreen> {
 
       var prediction = await ModelService.runInference(File(image.path));
       String? label;
-      List<String> suggestions = [];
       String colorHex = color.value.toRadixString(16).padLeft(8, '0');
 
       // Handle prediction result as required
@@ -190,8 +189,8 @@ class ImagePreviewDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ImageDataProvider>(context, listen: false);
-    provider.setImageData(ImageData(label: 'YourLabel', colorHex: 'YourColorHex'));
+    final provider = Provider.of<ImageDataProvider>(context, listen: true);
+    provider.setImageData(ImageData(label: label!, colorHex: colorHex!));
 
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -213,14 +212,12 @@ class ImagePreviewDialog extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // Navigate to home page with index=1
+                    
                     Navigator.pop(context); // Close the dialog
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ImageRules(selectionModel: context,                    
-                          label: label,
-                          colorHex: colorHex, 
+                        builder: (context) => ImageRules(imageData: provider.imageData,                    
                         ),
                       ),
                     );

@@ -6,202 +6,149 @@ import 'package:csv/csv.dart';
 import 'package:clothing/utils/recos.dart';
 import 'package:clothing/utils/selection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class ImageRules extends StatefulWidget {
-  late RecommendationModel? recommendationModel;
+  final RecommendationModel? recommendationModel;
   final SelectionModel? selectionModel;
   final HomeModel? homeModel;
   final ImageData? imageData;
-  final String label;
-  final String colorHex;
   final String csvFilePath;
 
-  ImageRules({super.key, 
-     this.recommendationModel,
-     this.selectionModel,
-     this.homeModel,
-     this.imageData,
-    required this.label,
-    required this.colorHex,
+  ImageRules({
+    Key? key,
+    this.recommendationModel,
+    this.selectionModel,
+    this.homeModel,
+    this.imageData,
     this.csvFilePath = 'assets/annotations.csv',
-  });
-
+  }) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _ImageRulesState createState() => _ImageRulesState();
 }
 
 class _ImageRulesState extends State<ImageRules> {
-  late RecommendationModel recommendationModel;
-  late SelectionModel selectionModel;
-  late HomeModel homeModel;
-  late ImageData imageData;
+  late List<Map<String, dynamic>> imageDataList = [];
 
-
-   @override
+  @override
   void initState() {
     super.initState();
-    
-    // Initialize RecommendationModel
-    Future.delayed(Duration.zero, () {
-      recommendationModel = widget.recommendationModel!;
-      recommendationModel.updateRecommendation();
-      // Load SelectionModel (assuming you want to load this model)
-    Future.delayed(Duration.zero, () {
-      selectionModel = Provider.of<SelectionModel>(context, listen: false);
-      // Add any necessary method calls or logic here
-    });
+    _loadImageData();
+  }
 
-    // Load HomeModel (assuming you want to load this model)
-    Future.delayed(Duration.zero, () {
-      homeModel = Provider.of<HomeModel>(context, listen: false);
-      // Add any necessary method calls or logic here
-    });
-  
+  Future<void> _loadImageData() async {
+    final String csvData = await rootBundle.loadString(widget.csvFilePath);
+    List<List<dynamic>> rowsAsListOfValues = const CsvToListConverter().convert(csvData);
+    List<String> headers = rowsAsListOfValues[0].map((header) => header.toString()).toList();
+
+    setState(() {
+      imageDataList = rowsAsListOfValues.sublist(1).map((row) {
+        return Map.fromIterables(headers, row);
+      }).toList();
     });
   }
+  String? selApparelType;
+  List<String> getFilteredImages() {
+    return imageDataList.where((imageData) {
+      return imageData['gender'] == widget.selectionModel?.gender &&
+          imageData['bodyshape'] == widget.selectionModel?.bodyTypeOption &&
+          imageData['skinundertone'] == widget.selectionModel?.skinColorOption &&
+          imageData['occasion'] == widget.homeModel?.occasion &&
+          (selApparelType == null || imageData['apparel'] != selApparelType);
+    }).map((imageData) => imageData['ID'].toString()).toList();
+  }
+  
+  final Map<int, List<String>> boxToApparelTypeMap = {
+  1: ['Rings', 'Hats', 'Necklace'],
+  2: ['Jacket', 'Hoodie', 'Blazer'],
+  3: ['T-Shirt', 'Top', 'Shirt', 'Dress'],
+  4: ['Shorts', 'Skirt', 'Jeans', 'Pants'],
+  5: ['Shoes', 'Heels', 'Other'],
+};
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ImageRules Demo',
-      home: ImageRules(
-        recommendationModel: Provider.of<RecommendationModel>(context),
-        selectionModel: Provider.of<SelectionModel>(context),
-        homeModel: Provider.of<HomeModel>(context),
-        imageData: Provider.of<ImageData>(context),
-        label: 'Demo',
-        colorHex: '#FFFFFF',
+    List<String> filteredImageIds = getFilteredImages();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Filtered Images'),
+      ),
+      body: ListView.builder(
+        itemCount: filteredImageIds.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text('Image ID: ${filteredImageIds[index]}'),
+            // Add more details as required
+          );
+        },
       ),
     );
   }
 
+
+Future<List<List<dynamic>>> _readCsv() async {
+  final input = File(widget.csvFilePath).openRead();
+  return await input.transform(utf8.decoder).transform(const CsvToListConverter()).toList();
+}
+
+Future<List<String>> _filterByComplementaryColors(List<String> ids) async {
+  final fields = await _readCsv();
+  final headers = fields.first.map((e) => e.toString()).toList();
+
+  final colorIndex = headers.indexOf('color');
+  final apparelIndex = headers.indexOf('apparel');
+  final idIndex = headers.indexOf('ID');
+
+  return ids.where((id) {
+    final row = fields.firstWhere((row) => row[idIndex]?.toString() == id, orElse: () => []);
+    final color = row[colorIndex]?.toString();
+    final apparel = row[apparelIndex]?.toString();
+
+    return color != null && apparel == widget.imageData?.label && _isValidColorForSelection(color);
+  }).toList();
+}
+
+bool _isValidColorForSelection(String color) {
+  final colorRecommendations = complementaryColors[color];
+  if (colorRecommendations == null) return false;
+
+  switch (widget.selectionModel?.skinColorOption) {
+    case 'Cool':
+      return colorRecommendations['cool']?.contains(color) ?? false;
+    case 'Warm':
+      return colorRecommendations['warm']?.contains(color) ?? false;
+    default:
+      final combinedColors = [...?colorRecommendations['cool'], ...?colorRecommendations['warm']].toSet();
+      return combinedColors.contains(color);
+  }
+}
+
+List<String> getComplementaryColors() {
+  String? skinColorOption = widget.selectionModel?.skinColorOption;
+  String colorHex = widget.imageData?.colorHex ?? '';
+  
+  List<String> complementaryColorsList = [];
+  if (complementaryColors.containsKey(colorHex)) {
+    complementaryColorsList = complementaryColors[colorHex]?[skinColorOption ?? ''] ?? [];
+  }
+  return complementaryColorsList;
+}
+
+List<String> getComplementaryClothingRecommendation() {
+  List<String> complementaryColorsList = getComplementaryColors();
+  List<String> filteredImageIds = _filterByComplementaryColors(getFilteredImages());
   
   
+  return filteredImageIds;
+}
+List<String> fetchRecommendations(String apparelType, String color) {
 
-  
-
-// No idea what this does
-      @override
-      void didChangeDependencies() {
-        super.didChangeDependencies();
-      }    
-
-    Future<List<String>> getFilteredMatchingImageIds() async {
-      List<String> allImageIds = await _readCsvAndGetImageIds();
-      List<String> complementaryFilteredIds =
-          await _filterByComplementaryColors(allImageIds);
-      return _filterByGenderAndBodyShape(complementaryFilteredIds);
-    }
-
-    Future<List<String>> _readCsvAndGetImageIds() async {
-      final input = File(widget.csvFilePath).openRead();
-      final fields = await input
-          .transform(utf8.decoder)
-          .transform(const CsvToListConverter())
-          .toList();
-
-      final headers = fields[0].map((e) => e.toString()).toList();
-      final idIndex = headers.indexOf('ID');
-
-      List<String> imageIds = [];
-
-      for (var i = 1; i < fields.length; i++) {
-        final imageId = fields[i][idIndex]?.toString();
-        if (imageId != null) {
-          imageIds.add(imageId);
-        }
-      }
-
-      return imageIds;
-    }
-
-    Future<List<String>> _filterByComplementaryColors(
-        List<String> imageIds) async {
-      List<String> matchingIds = [];
-
-      final input = File(widget.csvFilePath).openRead();
-      final fields = await input
-          .transform(utf8.decoder)
-          .transform(const CsvToListConverter())
-          .toList();
-
-      final headers = fields[0].map((e) => e.toString()).toList();
-      final colorIndex = headers.indexOf('color');
-      final idIndex = headers.indexOf('ID');
-
-      for (var i = 1; i < fields.length; i++) {
-        final imageId = fields[i][idIndex]?.toString();
-        final imageColor = fields[i][colorIndex]?.toString();
-
-        if (imageId != null && imageColor != null) {
-          final colorRecommendations = complementaryColors[imageColor];
-          if (colorRecommendations != null) {
-            switch (selectionModel.skinColorOption) {
-              case 'Cool':
-                if (colorRecommendations['cool']?.contains(imageColor) ??
-                    false) {
-                  matchingIds.add(imageId);
-                }
-                break;
-              case 'Warm':
-                if (colorRecommendations['warm']?.contains(imageColor) ??
-                    false) {
-                  matchingIds.add(imageId);
-                }
-                break;
-              default:
-                final combinedColors = [
-                  ...?colorRecommendations['cool'],
-                  ...?colorRecommendations['warm'],
-                ].toSet().toList();
-
-                if (combinedColors.contains(imageColor)) {
-                  matchingIds.add(imageId);
-                }
-                break;
-            }
-          }
-        }
-      }
-
-      return matchingIds;
-    }
-
-    Future<List<String>> _filterByGenderAndBodyShape(
-        List<String> imageIds) async {
-      List<String> filteredIds = [];
-
-      final input = File(widget.csvFilePath).openRead();
-      final fields = await input
-          .transform(utf8.decoder)
-          .transform(const CsvToListConverter())
-          .toList();
-
-      final headers = fields[0].map((e) => e.toString()).toList();
-      final idIndex = headers.indexOf('ID');
-      final genderIndex = headers.indexOf('gender');
-      final bodyShapeIndex = headers.indexOf('bodyshape');
-
-      for (var imageId in imageIds) {
-        final index =
-            fields.indexWhere((row) => row[idIndex]?.toString() == imageId);
-        if (index != -1) {
-          final imageGender = fields[index][genderIndex]?.toString();
-          final imageBodyType = fields[index][bodyShapeIndex]?.toString();
-
-          if (imageGender == selectionModel.gender &&
-              imageBodyType == selectionModel.bodyTypeOption) {
-            filteredIds.add(imageId);
-          }
-        }
-      }
-
-      return filteredIds;
-    }
-
-    Map<String, Map<String, List<String>>> complementaryColors = {
+    return ['T-Shirt', 'Shirt', 'Hoodie', ...]; // Example
+  }
+}
+ Map<String, Map<String, List<String>>> complementaryColors = {
       'black': {
         'cool': ['navy', 'gray', 'white', 'black'],
         'warm': ['olive', 'brown', 'white', 'black']

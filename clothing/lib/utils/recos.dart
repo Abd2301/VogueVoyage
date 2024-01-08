@@ -1,27 +1,21 @@
 import 'package:flutter/material.dart';
 
 class RecommendationModel with ChangeNotifier {
-  String selectedApparelType1 = 'Accessories'; // Default initialization
-  String selectedApparelType2 = 'Jackets'; // Default initialization
-  String selectedApparelType3 = 'T-Shirt'; // Default initialization
-  String selectedApparelType4 = 'Shorts'; // Default initialization
-  String selectedApparelType5 = 'Shoes'; // Default initialization
-  
+  Map<int, List<String>> selectedApparelTypes = {
+    1: ['Rings', 'Hats', 'Necklace'],
+    2: ['Jacket', 'Hoodie', 'Blazer'],
+    3: ['T-Shirt', 'Top', 'Shirt', 'Dress'],
+    4: ['Shorts', 'Skirt', 'Jeans', 'Pants', 'Cargos'],
+    5: ['Shoes', 'Heels', 'Other'],
+  };
 
-  // Function to update the recommendation based on certain criteria or data
-  void updateRecommendation({
-    String? type1,
-    String? type2,
-    String? type3,
-    String? type4,
-    String? type5,
- }) {
-    if (type1 != null) selectedApparelType1 = type1;
-    if (type2 != null) selectedApparelType2 = type2;
-    if (type3 != null) selectedApparelType3 = type3;
-    if (type4 != null) selectedApparelType4 = type4;
-    if (type5 != null) selectedApparelType5 = type5;
-
-  notifyListeners();
- }
+  void updateApparelType(int carouselIndex, String selectedType) {
+    // Logic to update selectedApparelTypes based on carouselIndex and selectedType
+    // This is a placeholder; you can implement the logic based on your requirements.
+    // For now, I'll just update the first type in the list.
+    selectedApparelTypes[carouselIndex] = [selectedType];
+    
+    // Notify listeners to rebuild the UI
+    notifyListeners();
+  }
 }

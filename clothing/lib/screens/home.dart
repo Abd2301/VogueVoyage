@@ -1,16 +1,17 @@
+import 'package:clothing/utils/image_data.dart';
 import 'package:clothing/utils/recos.dart';
 import 'package:clothing/utils/selection.dart';
 import 'package:flutter/material.dart';
 import 'camera_screen.dart';
 import 'package:clothing/utils/adjustments.dart';
 import 'package:provider/provider.dart';
+import 'package:clothing/features/carousels.dart';
 
 class Home extends StatefulWidget {
   final String? imagePath;
   final int initialPage;
   SelectionModel? selectionModel;
   RecommendationModel? recommendationModel;
-
 
   Home({
     this.recommendationModel,
@@ -47,8 +48,8 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final recommendationModel = Provider.of<RecommendationModel>(context);
     
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vogue Voyage'),
@@ -70,17 +71,7 @@ class _HomeState extends State<Home> {
           }
         },
         child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Outfit Builder',
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -110,54 +101,40 @@ class _HomeState extends State<Home> {
             ),
             Expanded(
               child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentPage = index;
-                    });
-                  },
-                  children: [
-                    CameraScreen(
-                        pageController:
-                            _pageController), // CameraScreen as the second page
-
-                    Padding(
-                      padding: EdgeInsets.all(36.0),
-                      child: Column(
-                        children: [
-                          MyCarousels(
-                            selectedApparelType1:
-                                recommendationModel.selectedApparelType1,
-                            selectedApparelType2:
-                                recommendationModel.selectedApparelType2,
-                            selectedApparelType3:
-                                recommendationModel.selectedApparelType3,
-                            selectedApparelType4:
-                                recommendationModel.selectedApparelType4,
-                            selectedApparelType5:
-                                recommendationModel.selectedApparelType5,
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                children: [
+                  CameraScreen(
+                      pageController:
+                          _pageController), // CameraScreen as the second page
+                  Padding(
+                    padding: EdgeInsets.all(36.0),
+                    child: Carousels( pageController: _pageController)
+                        ),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 16.0, horizontal: 8.0),
+                          child: Text(
+                            getBodyShapeDescription(),
+                            style: TextStyle(fontSize: 18.0),
                           ),
-                          SizedBox(
-                              height:
-                                  20), // Add some space between the carousel and the container
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 16.0, horizontal: 8.0),
-                            child: Text(
-                              getBodyShapeDescription(), 
-                              style: TextStyle(fontSize: 18.0),
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ]),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
     );
   }
+
   String getBodyShapeDescription() {
     String? bodyShapeOption = widget.selectionModel?.bodyTypeOption;
 
@@ -171,6 +148,7 @@ class _HomeState extends State<Home> {
       return 'Body shape information not available.';
     }
   }
+
   Future _showOccasionMenu(BuildContext context) async {
     final String? result = await showDialog<String>(
       context: context,
@@ -250,20 +228,43 @@ class _HomeState extends State<Home> {
   }
 }
 
-class MyCarousels extends StatelessWidget {
-  final String selectedApparelType1;
-  final String selectedApparelType2;
-  final String selectedApparelType3;
-  final String selectedApparelType4;
-  final String selectedApparelType5;
+class MyCarousel extends StatefulWidget {
+  final int carouselIndex;
+  final List<String> items;
 
-  const MyCarousels({
-    required this.selectedApparelType1,
-    required this.selectedApparelType2,
-    required this.selectedApparelType3,
-    required this.selectedApparelType4,
-    required this.selectedApparelType5,
-  });
+  MyCarousel({required this.carouselIndex, required this.items});
+
+  @override
+  _MyCarouselState createState() => _MyCarouselState();
+}
+
+class _MyCarouselState extends State<MyCarousel> {
+  late List<String> items;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the items based on the widget.apparelType
+    items = _getApparelItems(widget.carouselIndex);
+  }
+
+  List<String> _getApparelItems(String apparelType) {
+    // Implement logic to get the list of items for the given apparelType
+    // For now, returning a dummy list
+    return ['path/to/image1', 'path/to/image2', 'path/to/image3'];
+  }
+
+  List<String> _getApparelTypesForBox(int boxIndex) {
+    return boxToApparelTypeMap[boxIndex] ?? [];
+  }
+
+  final Map<int, List<String>> boxToApparelTypeMap = {
+    1: ['Rings', 'Hats', 'Necklace'],
+    2: ['Jacket', 'Hoodie', 'Blazer'],
+    3: ['T-Shirt', 'Top', 'Shirt', 'Dress'],
+    4: ['Shorts', 'Skirt', 'Jeans', 'Pants', 'Cargos'],
+    5: ['Shoes', 'Heels', 'Other'],
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -271,19 +272,19 @@ class MyCarousels extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Expanded(
-          child: CarouselWithButton(apparelType: selectedApparelType1),
+          child: CarouselWithButton(apparelType: _getApparelTypesForBox(1)),
         ),
         Expanded(
-          child: CarouselWithButton(apparelType: selectedApparelType2),
+          child: CarouselWithButton(apparelType: _getApparelTypesForBox(2)),
         ),
         Expanded(
-          child: CarouselWithButton(apparelType: selectedApparelType3),
+          child: CarouselWithButton(apparelType: _getApparelTypesForBox(3)),
         ),
         Expanded(
-          child: CarouselWithButton(apparelType: selectedApparelType4),
+          child: CarouselWithButton(apparelType: _getApparelTypesForBox(4)),
         ),
         Expanded(
-          child: CarouselWithButton(apparelType: selectedApparelType5),
+          child: CarouselWithButton(apparelType: _getApparelTypesForBox(5)),
         ),
       ],
     );
@@ -291,43 +292,40 @@ class MyCarousels extends StatelessWidget {
 }
 
 class CarouselWithButton extends StatefulWidget {
-  final String apparelType;
+  final List<String> apparelType;
+  final RecommendationModel recommendationModel;
+  final SelectionModel selectionModel;
+  final HomeModel homeModel;
+  final ImageData imageData;
 
-  const CarouselWithButton({required this.apparelType});
+  const CarouselWithButton({
+    required this.apparelType,
+    required this.recommendationModel,
+    required this.selectionModel,
+    required this.homeModel,
+    required this.imageData,
+  });
 
   @override
   _CarouselWithButtonState createState() => _CarouselWithButtonState();
 }
 
 class _CarouselWithButtonState extends State<CarouselWithButton> {
-  late List<String> items;
+  late List<String> filteredImageIds;
 
   @override
   void initState() {
     super.initState();
-    items = _getImagesForApparelType(widget.apparelType);
+    _updateFilteredImages();
   }
 
-  List<String> _getImagesForApparelType(String apparelType) {
-    return [];
-  }
-
-  List<String> _getApparelTypesForBox(int boxNumber) {
-    // For apparel type dialog
-    switch (boxNumber) {
-      case 1:
-        return ['Rings', 'Hats', 'Necklace'];
-      case 2:
-        return ['Jacket', 'Hoodie', 'Blazer'];
-      case 3:
-        return ['T-Shirt', 'Top', 'Shirt', 'Dress'];
-      case 4:
-        return ['Shorts', 'Skirt', 'Jeans', 'Pants'];
-      case 5:
-        return ['Shoes', 'Heels', 'Other'];
-      default:
-        return [];
-    }
+  void _updateFilteredImages() {
+    filteredImageIds =
+        widget.recommendationModel.getComplementaryClothingRecommendation(
+      widget.apparelType,
+      widget.selectionModel.skinColorOption,
+    );
+    setState(() {});
   }
 
   @override
@@ -336,12 +334,21 @@ class _CarouselWithButtonState extends State<CarouselWithButton> {
       children: [
         Expanded(
           flex: 7,
-          child: MyCarousel(items: items),
+          child: ListView.builder(
+            itemCount: filteredImageIds.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text('Image ID: ${filteredImageIds[index]}'),
+              );
+            },
+          ),
         ),
         Expanded(
           flex: 3,
           child: ElevatedButton(
-            onPressed: () => _showChangeImagesDialog(context),
+            onPressed: () {
+              _updateFilteredImages();
+            },
             child: const Text('Change Images'),
           ),
         ),
@@ -350,9 +357,6 @@ class _CarouselWithButtonState extends State<CarouselWithButton> {
   }
 
   void _showChangeImagesDialog(BuildContext context) async {
-    final List<String> options =
-        _getApparelTypesForBox(widget.apparelType as int);
-
     final selectedOption = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
@@ -369,37 +373,23 @@ class _CarouselWithButtonState extends State<CarouselWithButton> {
         );
       },
     );
-  }
-}
 
-class MyCarousel extends StatelessWidget {
-  final List<String> items;
+    if (selectedOption != null) {
+      updateRecommendationsBasedOnCarousel(
+        Provider.of<RecommendationModel>(context, listen: false),
+        selectedOption,
+      );
 
-  MyCarousel({required this.items});
-
-  @override
-  Widget build(BuildContext context) {
-    return PageView.builder(
-      controller: PageController(viewportFraction: 0.8),
-      itemCount: items.length * 100,
-      itemBuilder: (context, index) {
-        final item = items[index % items.length];
-        return buildItem(item);
-      },
-    );
+      // Update the criteria based on the selected apparel type
+      _updateFilteredImages(selectedOption);
+    }
   }
 
-  Widget buildItem(String item) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      child: Container(
-        child: Center(
-          child: Image.asset(
-            item,
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
-    );
+  void _updateFilteredImages(String selectedApparelType) {
+    // Update the criteria and filter the images based on the selected apparel type
+    // You can use the selectedApparelType to filter the images and update the UI accordingly
+    setState(() {
+      // Update the state and trigger a rebuild of the widget
+    });
   }
 }
