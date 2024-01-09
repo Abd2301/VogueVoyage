@@ -60,13 +60,7 @@ class _ImageRulesState extends State<ImageRules> {
     }).map((imageData) => imageData['ID'].toString()).toList();
   }
   
-  final Map<int, List<String>> boxToApparelTypeMap = {
-  1: ['Rings', 'Hats', 'Necklace'],
-  2: ['Jacket', 'Hoodie', 'Blazer'],
-  3: ['T-Shirt', 'Top', 'Shirt', 'Dress'],
-  4: ['Shorts', 'Skirt', 'Jeans', 'Pants'],
-  5: ['Shoes', 'Heels', 'Other'],
-};
+ 
   @override
   Widget build(BuildContext context) {
     List<String> filteredImageIds = getFilteredImages();

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 
 class ImageDataProvider with ChangeNotifier {
-  ImageData? _imageData;
+  String? _label;
+  String? _colorHex;
 
-  void setImageData(ImageData data) {
-    _imageData = data;
+  get imageData => null;
+
+  void setImageData({required String newLabel, required String newColorHex}) {
+    _label = newLabel;
+    _colorHex = newColorHex;
     notifyListeners();
   }
 
-  ImageData? get imageData => _imageData;
-}
-class ImageData {
-  final String label;
-  final String colorHex;
-
-  ImageData({required this.label, required this.colorHex});
+  String? get label => _label;
+  String? get colorHex => _colorHex;
 }

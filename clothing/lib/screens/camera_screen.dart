@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui' as ui;
+import 'package:clothing/features/carousels.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:clothing/features/model_service.dart';
@@ -214,10 +215,12 @@ class ImagePreviewDialog extends StatelessWidget {
                   onPressed: () {
                     
                     Navigator.pop(context); // Close the dialog
-                    Navigator.pushReplacement(
+                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ImageRules(imageData: provider.imageData,                    
+                        builder: (context) => Carousels(
+                          label: label!,
+                          colorHex: colorHex!,
                         ),
                       ),
                     );

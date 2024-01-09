@@ -1,3 +1,4 @@
+import 'package:clothing/screens/user_info.dart';
 import 'package:clothing/utils/image_data.dart';
 import 'package:clothing/utils/recos.dart';
 import 'package:clothing/utils/selection.dart';
@@ -48,7 +49,83 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    
+    Future _showOccasionMenu(BuildContext context) async {
+      final String? result = await showDialog<String>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text('Select Occasion'),
+            children: [
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, 'Casual');
+                },
+                child: Text('Casual'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, 'Formal');
+                },
+                child: Text('Formal'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, 'All');
+                },
+                child: Text('All'),
+              ),
+            ],
+          );
+        },
+      );
+
+// Set the selected occasion in HomeModel
+      if (result != null) {
+        Provider.of<HomeModel>(context, listen: false).setOccasion(result);
+      }
+    }
+
+    Future _showApparelMenu(BuildContext context) async {
+      // You can populate this list based on your needs
+      final List<String> options = [
+        'T-Shirts',
+        'Top',
+        'Shirts',
+        'Jeans',
+        'Pants',
+        'Shoes',
+        'Boots',
+        'Skirts',
+        'Dresses',
+        'Jackets',
+        'Blazers',
+        'Heels',
+        'Hats',
+        'Shorts'
+      ];
+
+      final String? result = await showDialog<String>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text('Select Apparel Type'),
+            children: options
+                .map((option) => SimpleDialogOption(
+                      onPressed: () {
+                        Navigator.pop(context, option);
+                      },
+                      child: Text(option),
+                    ))
+                .toList(),
+          );
+        },
+      );
+
+      // Set the selected apparel input in HomeModel
+      if (result != null) {
+        Provider.of<HomeModel>(context, listen: false).setApparelInput(result);
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -71,7 +148,7 @@ class _HomeState extends State<Home> {
           }
         },
         child: Column(
-
+          children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -110,21 +187,22 @@ class _HomeState extends State<Home> {
                 children: [
                   CameraScreen(
                       pageController:
-                          _pageController), // CameraScreen as the second page
+                          _pageController), // CameraScreen as the first page
                   Padding(
                     padding: EdgeInsets.all(36.0),
-                    child: Carousels( pageController: _pageController)
-                        ),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 16.0, horizontal: 8.0),
-                          child: Text(
-                            getBodyShapeDescription(),
-                            style: TextStyle(fontSize: 18.0),
-                          ),
-                        ),
-                      ],
-                    ),
+                    child: Carousels(
+                      controller: _pageController,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentPage = index;
+                        });
+                      },
+                    ), // Carousels as the second page
+                  ),
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+                    child: UserInfoScreen(), // UserInfoScreen as the third page
                   ),
                 ],
               ),
@@ -133,263 +211,5 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
-  }
-
-  String getBodyShapeDescription() {
-    String? bodyShapeOption = widget.selectionModel?.bodyTypeOption;
-
-    if (bodyShapeOption == 'Ectomorph') {
-      return 'Ectomorphs are generally leaner and find it harder to gain weight or muscle. They often have a faster metabolism.';
-    } else if (bodyShapeOption == 'Mesomorph') {
-      return 'Mesomorphs tend to have a more athletic build, gaining muscle and losing fat more easily than other body types.';
-    } else if (bodyShapeOption == 'Endomorph') {
-      return 'Endomorphs typically have a higher body fat percentage and may find it more challenging to lose weight.';
-    } else {
-      return 'Body shape information not available.';
-    }
-  }
-
-  Future _showOccasionMenu(BuildContext context) async {
-    final String? result = await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: const Text('Select Occasion'),
-          children: [
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 'Casual');
-              },
-              child: Text('Casual'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 'Formal');
-              },
-              child: Text('Formal'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 'All');
-              },
-              child: Text('All'),
-            ),
-          ],
-        );
-      },
-    );
-
-// Set the selected occasion in HomeModel
-    if (result != null) {
-      Provider.of<HomeModel>(context, listen: false).setOccasion(result);
-    }
-  }
-
-  Future _showApparelMenu(BuildContext context) async {
-    // You can populate this list based on your needs
-    final List<String> options = [
-      'T-Shirts',
-      'Top',
-      'Shirts',
-      'Jeans',
-      'Pants',
-      'Shoes',
-      'Boots',
-      'Skirts',
-      'Dresses',
-      'Jackets',
-      'Blazers',
-      'Heels',
-      'Hats',
-      'Shorts'
-    ];
-
-    final String? result = await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: const Text('Select Apparel Type'),
-          children: options
-              .map((option) => SimpleDialogOption(
-                    onPressed: () {
-                      Navigator.pop(context, option);
-                    },
-                    child: Text(option),
-                  ))
-              .toList(),
-        );
-      },
-    );
-
-    // Set the selected apparel in HomeModel
-    if (result != null) {
-      Provider.of<HomeModel>(context, listen: false).setApparelInput(result);
-    }
-  }
-}
-
-class MyCarousel extends StatefulWidget {
-  final int carouselIndex;
-  final List<String> items;
-
-  MyCarousel({required this.carouselIndex, required this.items});
-
-  @override
-  _MyCarouselState createState() => _MyCarouselState();
-}
-
-class _MyCarouselState extends State<MyCarousel> {
-  late List<String> items;
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize the items based on the widget.apparelType
-    items = _getApparelItems(widget.carouselIndex);
-  }
-
-  List<String> _getApparelItems(String apparelType) {
-    // Implement logic to get the list of items for the given apparelType
-    // For now, returning a dummy list
-    return ['path/to/image1', 'path/to/image2', 'path/to/image3'];
-  }
-
-  List<String> _getApparelTypesForBox(int boxIndex) {
-    return boxToApparelTypeMap[boxIndex] ?? [];
-  }
-
-  final Map<int, List<String>> boxToApparelTypeMap = {
-    1: ['Rings', 'Hats', 'Necklace'],
-    2: ['Jacket', 'Hoodie', 'Blazer'],
-    3: ['T-Shirt', 'Top', 'Shirt', 'Dress'],
-    4: ['Shorts', 'Skirt', 'Jeans', 'Pants', 'Cargos'],
-    5: ['Shoes', 'Heels', 'Other'],
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Expanded(
-          child: CarouselWithButton(apparelType: _getApparelTypesForBox(1)),
-        ),
-        Expanded(
-          child: CarouselWithButton(apparelType: _getApparelTypesForBox(2)),
-        ),
-        Expanded(
-          child: CarouselWithButton(apparelType: _getApparelTypesForBox(3)),
-        ),
-        Expanded(
-          child: CarouselWithButton(apparelType: _getApparelTypesForBox(4)),
-        ),
-        Expanded(
-          child: CarouselWithButton(apparelType: _getApparelTypesForBox(5)),
-        ),
-      ],
-    );
-  }
-}
-
-class CarouselWithButton extends StatefulWidget {
-  final List<String> apparelType;
-  final RecommendationModel recommendationModel;
-  final SelectionModel selectionModel;
-  final HomeModel homeModel;
-  final ImageData imageData;
-
-  const CarouselWithButton({
-    required this.apparelType,
-    required this.recommendationModel,
-    required this.selectionModel,
-    required this.homeModel,
-    required this.imageData,
-  });
-
-  @override
-  _CarouselWithButtonState createState() => _CarouselWithButtonState();
-}
-
-class _CarouselWithButtonState extends State<CarouselWithButton> {
-  late List<String> filteredImageIds;
-
-  @override
-  void initState() {
-    super.initState();
-    _updateFilteredImages();
-  }
-
-  void _updateFilteredImages() {
-    filteredImageIds =
-        widget.recommendationModel.getComplementaryClothingRecommendation(
-      widget.apparelType,
-      widget.selectionModel.skinColorOption,
-    );
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          flex: 7,
-          child: ListView.builder(
-            itemCount: filteredImageIds.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text('Image ID: ${filteredImageIds[index]}'),
-              );
-            },
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: ElevatedButton(
-            onPressed: () {
-              _updateFilteredImages();
-            },
-            child: const Text('Change Images'),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _showChangeImagesDialog(BuildContext context) async {
-    final selectedOption = await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: const Text('Select Apparel Type'),
-          children: options
-              .map((option) => SimpleDialogOption(
-                    onPressed: () {
-                      Navigator.pop(context, option);
-                    },
-                    child: Text(option),
-                  ))
-              .toList(),
-        );
-      },
-    );
-
-    if (selectedOption != null) {
-      updateRecommendationsBasedOnCarousel(
-        Provider.of<RecommendationModel>(context, listen: false),
-        selectedOption,
-      );
-
-      // Update the criteria based on the selected apparel type
-      _updateFilteredImages(selectedOption);
-    }
-  }
-
-  void _updateFilteredImages(String selectedApparelType) {
-    // Update the criteria and filter the images based on the selected apparel type
-    // You can use the selectedApparelType to filter the images and update the UI accordingly
-    setState(() {
-      // Update the state and trigger a rebuild of the widget
-    });
   }
 }
