@@ -1,6 +1,5 @@
 import 'package:clothing/screens/user_info.dart';
 import 'package:clothing/utils/image_data.dart';
-import 'package:clothing/utils/recos.dart';
 import 'package:clothing/utils/selection.dart';
 import 'package:flutter/material.dart';
 import 'camera_screen.dart';
@@ -12,10 +11,12 @@ class Home extends StatefulWidget {
   final String? imagePath;
   final int initialPage;
   SelectionModel? selectionModel;
-  RecommendationModel? recommendationModel;
+  HomeModel? homeModel;
+  ImageDataProvider? imageData;
 
-  Home({
-    this.recommendationModel,
+  Home({super.key, 
+    this.imageData,
+    this.homeModel,
     this.selectionModel,
     this.imagePath,
     required this.initialPage,
@@ -31,13 +32,16 @@ class _HomeState extends State<Home> {
   int _currentPage = 1; // Assuming you want to start from the CameraScreen
   String? selectedOccasion = 'Casual'; // Default value
   String? selectedApparel = 'T-Shirt'; // Default value
-  late HomeModel homeModel; // Declare but don't initialize yet
+  late HomeModel homeModel; 
+  late SelectionModel selectionModel;
+  late ImageDataProvider imageData;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    homeModel =
-        Provider.of<HomeModel>(context); // Now it's safe to access context
+    selectionModel = Provider.of<SelectionModel>(context, listen: true);
+    homeModel = Provider.of<HomeModel>(context, listen: true);
+    imageData = Provider.of<ImageDataProvider>(context, listen: true);
   }
 
   @override
@@ -45,6 +49,7 @@ class _HomeState extends State<Home> {
     super.initState();
     _pageController = PageController(initialPage: _currentPage);
     _currentPage = widget.initialPage;
+   
   }
 
   @override
@@ -155,10 +160,10 @@ class _HomeState extends State<Home> {
                 ElevatedButton(
                   onPressed: () async {
                     final selected = _showOccasionMenu(context);
-                    if (selected != null) {
+
                       Provider.of<HomeModel>(context, listen: false)
                           .setOccasion(selected as String);
-                    }
+                    
                   },
                   child: Text(
                       Provider.of<HomeModel>(context).occasion ?? 'Occasion'),
@@ -190,15 +195,9 @@ class _HomeState extends State<Home> {
                           _pageController), // CameraScreen as the first page
                   Padding(
                     padding: EdgeInsets.all(36.0),
-                    child: Carousels(
-                      controller: _pageController,
-                      onPageChanged: (index) {
-                        setState(() {
-                          _currentPage = index;
-                        });
-                      },
-                    ), // Carousels as the second page
-                  ),
+                    child: Carousels(selectionModel: selectionModel,homeModel: homeModel, imageData: imageData,);
+                                    
+                    ), 
                   Container(
                     padding:
                         EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),

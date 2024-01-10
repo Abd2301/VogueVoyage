@@ -1,5 +1,4 @@
 import 'package:clothing/utils/adjustments.dart';
-import 'package:clothing/utils/recos.dart';
 import 'package:flutter/material.dart';
 import 'user_input.dart';
 import 'login.dart';
@@ -23,7 +22,6 @@ void main() async {
         ChangeNotifierProvider(create: (_) => SelectionModel()),
         ChangeNotifierProvider(create: (_) => UserIdNotifier()),  
         ChangeNotifierProvider(create: (_) => HomeModel()),  
-        ChangeNotifierProvider(create: (_) => RecommendationModel()),
         ChangeNotifierProvider(create: (_) => ImageDataProvider()),
       ],
       child: MyApp(),

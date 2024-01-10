@@ -5,8 +5,44 @@ import 'package:provider/provider.dart';
 import 'package:clothing/utils/adjustments.dart';
 import 'package:clothing/utils/selection.dart';
 import 'package:clothing/utils/image_data.dart';
- 
- 
+
+final Map<int, List<String>> boxToApparelTypeMap = {
+  1: ['Rings', 'Hats', 'Necklace'],
+  2: ['Jacket', 'Hoodie', 'Blazer'],
+  3: ['T-Shirt', 'Top', 'Shirt', 'Dress'],
+  4: ['Shorts', 'Skirt', 'Jeans', 'Pants'],
+  5: ['Shoes', 'Heels', 'Other'],
+};
+
+//General Carousels Widget Algo
+
+class Carousels extends StatefulWidget {
+  SelectionModel? selectionModel;
+  HomeModel? homeModel;
+  ImageDataProvider? imageData;
+
+  Carousels({
+    super.key, this.selectionModel, this.homeModel, this.imageData
+    });
+
+  @override
+  _CarouselState createState() => _CarouselState();
+}
+
+class _CarouselState extends State<Carousels> {
+  late SelectionModel selectionModel;
+  late HomeModel homeModel;
+  late ImageDataProvider imageData;
+
+  @override
+  void initState() {
+    super.initState();
+
+    selectionModel = Provider.of<SelectionModel>(context, listen: true);
+    homeModel = Provider.of<HomeModel>(context, listen: true);
+    imageData = Provider.of<ImageDataProvider>(context, listen: true);
+  }
+  
   List<String> getComplementaryColors(String color, skinColorOption) {
     final colorRecommendations = complementaryColors[color];
 
@@ -46,13 +82,7 @@ import 'package:clothing/utils/image_data.dart';
     }).toList();
   }
 
- final Map<int, List<String>> boxToApparelTypeMap = {
-  1: ['Rings', 'Hats', 'Necklace'],
-  2: ['Jacket', 'Hoodie', 'Blazer'],
-  3: ['T-Shirt', 'Top', 'Shirt', 'Dress'],
-  4: ['Shorts', 'Skirt', 'Jeans', 'Pants'],
-  5: ['Shoes', 'Heels', 'Other'],
-};
+
 
   List<Product> products = [
     Product('assets/images/dataset/shoe1.png', 'all', 'casual', 'sneakers',
@@ -386,7 +416,7 @@ import 'package:clothing/utils/image_data.dart';
   };
 
   String getBodyShapeDescription() {
-    String? bodyShapeOption = selectionModel?.bodyTypeOption;
+    String? bodyShapeOption = selectionModel.bodyTypeOption;
 
     if (bodyShapeOption == 'Ectomorph') {
       return 'Ectomorphs are generally leaner and find it harder to gain weight or muscle. They often have a faster metabolism.';
@@ -399,77 +429,21 @@ import 'package:clothing/utils/image_data.dart';
     }
   }
 
-
-//General Carousels Widget Algo
-
-
-class Carousels extends StatefulWidget {
-
-  final PageController pageController;
-    const Carousels({super.key, required this.pageController});
-
-  @override
-  _CarouselState createState() => _CarouselState();
-}
-
-class _CarouselState extends State<Carousels> {
-  late SelectionModel selectionModel;
-  late HomeModel homeModel;
-  late ImageDataProvider imageData;
-
-  @override
-  void initState() {
-    super.initState();
-
-    selectionModel = Provider.of<SelectionModel>(context, listen: false);
-    homeModel = Provider.of<HomeModel>(context, listen: false);
-    imageData = Provider.of<ImageDataProvider>(context, listen: false);
-  }
-
-
-  @override
+   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text("Outfit Builder"),
       ),
-      body: SizedBox(
-        height: 250,
-        child: ScrollSnapList(
-          itemBuilder: _buildListItem,
-          itemCount: products.length,
-          itemSize: 150,
-          onItemFocus: (index) {},
-          dynamicItemSize: true,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildListItem(BuildContext context, int index) {
-    Product product = products[index];
-    return SizedBox(
-      width: 150,
-      height: 300,
-      child: Card(
-        elevation: 12,
-        child: ClipRRect(
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          child: Column(
-            children: [
-              Image.asset(
-                product.imagePath,
-                fit: BoxFit.cover,
-                width: 150,
-                height: 180,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-            ],
-          ),
-        ),
+      body: ListView(
+        children: [
+          Carousel1(filteredProducts: products),
+          Carousel2(filteredProducts: products), 
+          Carousel3(filteredProducts: products), 
+          Carousel4(filteredProducts: products), 
+          Carousel5(filteredProducts: products), 
+        ],
       ),
     );
   }
@@ -479,39 +453,66 @@ class _CarouselState extends State<Carousels> {
 
 
 class Carousel1 extends StatelessWidget {
-  final int boxIndex; // Index from your map to determine the type of apparel
+  final int boxIndex = 1; // Hardcoded boxIndex value for filtering
+  final List<Product> filteredProducts;
 
-  Carousel1({required this.boxIndex});
+  Carousel1({required this.filteredProducts});
 
   @override
   Widget build(BuildContext context) {
-    // Retrieve products based on boxIndex
-    int boxIndex = 1;
+    // Retrieve allowed apparel types based on boxIndex
+    List<String> allowedApparelTypes = boxToApparelTypeMap[boxIndex] ?? [];
+    
+    // Filter the products list based on the allowed apparel types
+    List<Product> productsForBoxIndex = filteredProducts.where((product) => allowedApparelTypes.contains(product.appareltype)).toList();
 
-    List<String> apparelTypes = boxToApparelTypeMap[boxIndex] ?? [];
+    // Check if productsForBoxIndex is empty and handle it accordingly
+    if (productsForBoxIndex.isEmpty) {
+      return Center(child: Text('No products found for the allowed apparel types.'));
+    }
 
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("Outfit Builder - Carousel $boxIndex"),
-      ),
-      body: SizedBox(
-        height: 250,
-        child: ScrollSnapList(
-          itemBuilder: (context, index) {
-            return _buildListItem(context, apparelTypes[index]);
-          },
-          itemCount: apparelTypes.length,
-          itemSize: 150,
-          onItemFocus: (index) {},
-          dynamicItemSize: true,
+        return Row(
+      children: [
+        // Your existing ScrollSnapList widget
+        Expanded(
+          child: SizedBox(
+            height: 250,
+            child: ScrollSnapList(
+              itemBuilder: (context, index) {
+                return _buildListItem(context, productsForBoxIndex[index]);
+              },
+              itemCount: productsForBoxIndex.length,
+              itemSize: 150,
+              onItemFocus: (index) {},
+              dynamicItemSize: true,
+            ),
+          ),
         ),
-      ),
+        // PopupMenuButton for changing apparel type
+        PopupMenuButton<String>(
+          onSelected: (String selectedType) {
+            // Handle the selected type (e.g., update the products list)
+          },
+          itemBuilder: (BuildContext context) {
+            return boxToApparelTypeMap[boxIndex]?.map((String type) {
+              return PopupMenuItem<String>(
+                value: type,
+                child: Text(type),
+              );
+            }).toList() ?? [];
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(Icons.arrow_drop_down),
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildListItem(BuildContext context, String apparelType) {
-    // You can further customize this function based on your needs
+
+  Widget _buildListItem(BuildContext context, Product product) {
+    // You can customize this function to display the product details as required
     return SizedBox(
       width: 150,
       height: 300,
@@ -519,16 +520,321 @@ class Carousel1 extends StatelessWidget {
         elevation: 12,
         child: ClipRRect(
           borderRadius: const BorderRadius.all(Radius.circular(10)),
-          child: Column(
-            children: [
-              // Here you can display the image or icon corresponding to the apparelType
-              Text(
-                  apparelType), // Just an example, you can replace this with an image or icon
-              const SizedBox(
-                height: 10,
-              ),
-            ],
+        ),
+      ),
+    );
+  }
+}
+
+
+// Second Carousel
+
+
+class Carousel2 extends StatelessWidget {
+  final int boxIndex = 2; // Hardcoded boxIndex value for filtering
+  final List<Product> filteredProducts;
+
+  Carousel2({required this.filteredProducts});
+
+  @override
+  Widget build(BuildContext context) {
+    // Retrieve allowed apparel types based on boxIndex
+    List<String> allowedApparelTypes = boxToApparelTypeMap[boxIndex] ?? [];
+    
+    // Filter the products list based on the allowed apparel types
+    List<Product> productsForBoxIndex = filteredProducts.where((product) => allowedApparelTypes.contains(product.appareltype)).toList();
+
+    // Check if productsForBoxIndex is empty and handle it accordingly
+    if (productsForBoxIndex.isEmpty) {
+      return Center(child: Text('No products found for the allowed apparel types.'));
+    }
+
+    return Row(
+      children: [
+        // Your existing ScrollSnapList widget
+        Expanded(
+          child: SizedBox(
+            height: 250,
+            child: ScrollSnapList(
+              itemBuilder: (context, index) {
+                return _buildListItem(context, productsForBoxIndex[index]);
+              },
+              itemCount: productsForBoxIndex.length,
+              itemSize: 150,
+              onItemFocus: (index) {},
+              dynamicItemSize: true,
+            ),
           ),
+        ),
+        // PopupMenuButton for changing apparel type
+        PopupMenuButton<String>(
+          onSelected: (String selectedType) {
+            // Handle the selected type (e.g., update the products list)
+          },
+          itemBuilder: (BuildContext context) {
+            return boxToApparelTypeMap[boxIndex]?.map((String type) {
+              return PopupMenuItem<String>(
+                value: type,
+                child: Text(type),
+              );
+            }).toList() ?? [];
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(Icons.arrow_drop_down),
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  Widget _buildListItem(BuildContext context, Product product) {
+    // You can customize this function to display the product details as required
+    return SizedBox(
+      width: 150,
+      height: 300,
+      child: Card(
+        elevation: 12,
+        child: ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+// Third Carousel
+
+
+class Carousel3 extends StatelessWidget {
+  final int boxIndex = 1; // Hardcoded boxIndex value for filtering
+  final List<Product> filteredProducts;
+
+  Carousel3({required this.filteredProducts});
+
+  @override
+  Widget build(BuildContext context) {
+    // Retrieve allowed apparel types based on boxIndex
+    List<String> allowedApparelTypes = boxToApparelTypeMap[boxIndex] ?? [];
+    
+    // Filter the products list based on the allowed apparel types
+    List<Product> productsForBoxIndex = filteredProducts.where((product) => allowedApparelTypes.contains(product.appareltype)).toList();
+
+    // Check if productsForBoxIndex is empty and handle it accordingly
+    if (productsForBoxIndex.isEmpty) {
+      return Center(child: Text('No products found for the allowed apparel types.'));
+    }
+
+        return Row(
+      children: [
+        // Your existing ScrollSnapList widget
+        Expanded(
+          child: SizedBox(
+            height: 250,
+            child: ScrollSnapList(
+              itemBuilder: (context, index) {
+                return _buildListItem(context, productsForBoxIndex[index]);
+              },
+              itemCount: productsForBoxIndex.length,
+              itemSize: 150,
+              onItemFocus: (index) {},
+              dynamicItemSize: true,
+            ),
+          ),
+        ),
+        // PopupMenuButton for changing apparel type
+        PopupMenuButton<String>(
+          onSelected: (String selectedType) {
+            // Handle the selected type (e.g., update the products list)
+          },
+          itemBuilder: (BuildContext context) {
+            return boxToApparelTypeMap[boxIndex]?.map((String type) {
+              return PopupMenuItem<String>(
+                value: type,
+                child: Text(type),
+              );
+            }).toList() ?? [];
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(Icons.arrow_drop_down),
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  Widget _buildListItem(BuildContext context, Product product) {
+    // You can customize this function to display the product details as required
+    return SizedBox(
+      width: 150,
+      height: 300,
+      child: Card(
+        elevation: 12,
+        child: ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+// Fourth Carousel
+
+
+class Carousel4 extends StatelessWidget {
+  final int boxIndex = 1; // Hardcoded boxIndex value for filtering
+  final List<Product> filteredProducts;
+
+  Carousel4({required this.filteredProducts});
+
+  @override
+  Widget build(BuildContext context) {
+    // Retrieve allowed apparel types based on boxIndex
+    List<String> allowedApparelTypes = boxToApparelTypeMap[boxIndex] ?? [];
+    
+    // Filter the products list based on the allowed apparel types
+    List<Product> productsForBoxIndex = filteredProducts.where((product) => allowedApparelTypes.contains(product.appareltype)).toList();
+
+    // Check if productsForBoxIndex is empty and handle it accordingly
+    if (productsForBoxIndex.isEmpty) {
+      return Center(child: Text('No products found for the allowed apparel types.'));
+    }
+
+        return Row(
+      children: [
+        // Your existing ScrollSnapList widget
+        Expanded(
+          child: SizedBox(
+            height: 250,
+            child: ScrollSnapList(
+              itemBuilder: (context, index) {
+                return _buildListItem(context, productsForBoxIndex[index]);
+              },
+              itemCount: productsForBoxIndex.length,
+              itemSize: 150,
+              onItemFocus: (index) {},
+              dynamicItemSize: true,
+            ),
+          ),
+        ),
+        // PopupMenuButton for changing apparel type
+        PopupMenuButton<String>(
+          onSelected: (String selectedType) {
+            // Handle the selected type (e.g., update the products list)
+          },
+          itemBuilder: (BuildContext context) {
+            return boxToApparelTypeMap[boxIndex]?.map((String type) {
+              return PopupMenuItem<String>(
+                value: type,
+                child: Text(type),
+              );
+            }).toList() ?? [];
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(Icons.arrow_drop_down),
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  Widget _buildListItem(BuildContext context, Product product) {
+    // You can customize this function to display the product details as required
+    return SizedBox(
+      width: 150,
+      height: 300,
+      child: Card(
+        elevation: 12,
+        child: ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+// Five Carousel
+
+
+class Carousel5 extends StatelessWidget {
+  final int boxIndex = 1; // Hardcoded boxIndex value for filtering
+  final List<Product> filteredProducts;
+
+  Carousel5({required this.filteredProducts});
+
+  @override
+  Widget build(BuildContext context) {
+    // Retrieve allowed apparel types based on boxIndex
+    List<String> allowedApparelTypes = boxToApparelTypeMap[boxIndex] ?? [];
+    
+    // Filter the products list based on the allowed apparel types
+    List<Product> productsForBoxIndex = filteredProducts.where((product) => allowedApparelTypes.contains(product.appareltype)).toList();
+
+    // Check if productsForBoxIndex is empty and handle it accordingly
+    if (productsForBoxIndex.isEmpty) {
+      return Center(child: Text('No products found for the allowed apparel types.'));
+    }
+
+        return Row(
+      children: [
+        // Your existing ScrollSnapList widget
+        Expanded(
+          child: SizedBox(
+            height: 250,
+            child: ScrollSnapList(
+              itemBuilder: (context, index) {
+                return _buildListItem(context, productsForBoxIndex[index]);
+              },
+              itemCount: productsForBoxIndex.length,
+              itemSize: 150,
+              onItemFocus: (index) {},
+              dynamicItemSize: true,
+            ),
+          ),
+        ),
+        // PopupMenuButton for changing apparel type
+        PopupMenuButton<String>(
+          onSelected: (String selectedType) {
+            // Handle the selected type (e.g., update the products list)
+          },
+          itemBuilder: (BuildContext context) {
+            return boxToApparelTypeMap[boxIndex]?.map((String type) {
+              return PopupMenuItem<String>(
+                value: type,
+                child: Text(type),
+              );
+            }).toList() ?? [];
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(Icons.arrow_drop_down),
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  Widget _buildListItem(BuildContext context, Product product) {
+    // You can customize this function to display the product details as required
+    return SizedBox(
+      width: 150,
+      height: 300,
+      child: Card(
+        elevation: 12,
+        child: ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
         ),
       ),
     );

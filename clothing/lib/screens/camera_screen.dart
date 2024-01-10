@@ -4,7 +4,6 @@ import 'package:clothing/features/carousels.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:clothing/features/model_service.dart';
-import 'package:clothing/features/rules.dart';
 import 'package:flutter/services.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:clothing/utils/image_data.dart';
@@ -186,12 +185,13 @@ class ImagePreviewDialog extends StatelessWidget {
   final String? imagePath;
   final String? label;
   final String? colorHex;
-  ImagePreviewDialog({this.colorHex, this.imagePath, this.label});
+  final ImageDataProvider imageDataProvider;
+  ImagePreviewDialog({this.colorHex, this.imagePath, this.label, required this.imageDataProvider});
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ImageDataProvider>(context, listen: true);
-    provider.setImageData(ImageData(label: label!, colorHex: colorHex!));
+    final imageData = Provider.of<ImageDataProvider>(context, listen: true);
+    imageData.setImageData(label: label!, colorHex: colorHex!);
 
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -213,14 +213,13 @@ class ImagePreviewDialog extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    
                     Navigator.pop(context); // Close the dialog
-                     Navigator.pushReplacement(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => Carousels(
-                          label: label!,
-                          colorHex: colorHex!,
+
+                          imageData: imageData,
                         ),
                       ),
                     );
