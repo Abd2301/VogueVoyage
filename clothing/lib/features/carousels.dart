@@ -7,11 +7,11 @@ import 'package:clothing/utils/selection.dart';
 import 'package:clothing/utils/image_data.dart';
 
 final Map<int, List<String>> boxToApparelTypeMap = {
-  1: ['Rings', 'Hats', 'Necklace'],
-  2: ['Jacket', 'Hoodie', 'Blazer'],
-  3: ['T-Shirt', 'Top', 'Shirt', 'Dress'],
-  4: ['Shorts', 'Skirt', 'Jeans', 'Pants'],
-  5: ['Shoes', 'Heels', 'Other'],
+  1: ['rings', 'hats', 'necklace'],
+  2: ['jacket', 'hoodie', 'blazer'],
+  3: ['t-Shirt', 'top', 'shirt', 'dress'],
+  4: ['shorts', 'skirt', 'jeans', 'pants'],
+  5: ['shoes', 'heels', 'other'],
 };
 
 //General Carousels Widget Algo
@@ -610,7 +610,7 @@ class Carousel2 extends StatelessWidget {
 
 
 class Carousel3 extends StatelessWidget {
-  final int boxIndex = 1; // Hardcoded boxIndex value for filtering
+  final int boxIndex = 3; // Hardcoded boxIndex value for filtering
   final List<Product> filteredProducts;
 
   Carousel3({required this.filteredProducts});
@@ -689,7 +689,7 @@ class Carousel3 extends StatelessWidget {
 
 
 class Carousel4 extends StatelessWidget {
-  final int boxIndex = 1; // Hardcoded boxIndex value for filtering
+  final int boxIndex = 4; // Hardcoded boxIndex value for filtering
   final List<Product> filteredProducts;
 
   Carousel4({required this.filteredProducts});
@@ -768,7 +768,7 @@ class Carousel4 extends StatelessWidget {
 
 
 class Carousel5 extends StatelessWidget {
-  final int boxIndex = 1; // Hardcoded boxIndex value for filtering
+  final int boxIndex = 5; // Hardcoded boxIndex value for filtering
   final List<Product> filteredProducts;
 
   Carousel5({required this.filteredProducts});
