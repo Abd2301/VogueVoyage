@@ -31,7 +31,6 @@ class MyUserPage extends StatelessWidget {
       );
     }
 
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Welcome!'),
@@ -83,8 +82,6 @@ class _UserInputPageState extends State<UserInputPage> {
     final selectionModel = widget.selectionModel;
 
     return Scaffold(
-
-      
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -110,7 +107,7 @@ class _UserInputPageState extends State<UserInputPage> {
                   selectionModel.updateUserInfo(gender: selectedGender);
                 }
               },
-              items: ['Male', 'Female', 'Other']
+              items: ['male', 'female', 'other']
                   .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -166,13 +163,13 @@ class _BodyTypeOptionsState extends State<BodyTypeOptions> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             buildClickableImage(
-                'assets/images/body_type1.png', 'Ectomorph', 'Ectomorph'),
+                'assets/images/body_type1.png', 'Ectomorph', 'ectomorph'),
             SizedBox(height: 20),
             buildClickableImage(
-                'assets/images/body_type2.png', 'Mesomorph', 'Mesomorph'),
+                'assets/images/body_type2.png', 'Mesomorph', 'mesomorph'),
             SizedBox(height: 20),
             buildClickableImage(
-                'assets/images/body_type3.png', 'Endomorph', 'Endomorph'),
+                'assets/images/body_type3.png', 'Endomorph', 'endomorph'),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
@@ -267,13 +264,13 @@ class _SkinColorOptionsState extends State<SkinColorOptions> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             buildClickableImage(
-                'assets/images/skin_color1.png', 'Warm', 'Warm'),
+                'assets/images/skin_color1.png', 'Warm', 'warm'),
             SizedBox(height: 20),
             buildClickableImage(
-                'assets/images/skin_color2.png', 'Neutral', 'Neutral'),
+                'assets/images/skin_color2.png', 'Neutral', 'neutral'),
             SizedBox(height: 20),
             buildClickableImage(
-                'assets/images/skin_color3.png', 'Cool', 'Cool'),
+                'assets/images/skin_color3.png', 'Cool', 'cool'),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
@@ -355,18 +352,18 @@ class _SkinColorOptionsState extends State<SkinColorOptions> {
       ],
     );
   }
+
   void navigateToMain() {
-  int? parsedAge = int.tryParse(widget.selectionModel!.age.toString());
+    int? parsedAge = int.tryParse(widget.selectionModel!.age.toString());
 
-  if (parsedAge != null) {
-    Navigator.pushReplacementNamed(
-      context,
-      '/home',
-      arguments: {'userId': widget.userId},  // Passing userId as an argument
-    );
-  } else {
-    print('Invalid age entered');
+    if (parsedAge != null) {
+      Navigator.pushReplacementNamed(
+        context,
+        '/home',
+        arguments: {'userId': widget.userId}, // Passing userId as an argument
+      );
+    } else {
+      print('Invalid age entered');
+    }
   }
-}
-
 }

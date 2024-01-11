@@ -4,36 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:clothing/features/auth.dart';
 import 'package:clothing/utils/crypt.dart';
 
-
-
-class UserIdNotifier extends ChangeNotifier {
-  String _userId = '';
-
-  String get userId => _userId;
-
-  set userId(String value) {
-    _userId = value;
-    notifyListeners();
-  }
-}
-
 class LoginScreen extends StatelessWidget {
   late final PageController _pageController;
+  late String userId;
 
   LoginScreen({super.key}) {
     _pageController = PageController();
   }
-
-  void navigateToHomeOrUserInput(BuildContext context, bool isSigningUp, bool isSigningIn) {
-    if (isSigningUp) {
-      Navigator.pushReplacementNamed(context, '/userinputmain');
-    } else if (isSigningIn) {
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      showToast(message: 'Error occurred');
-    }
-  }
-
 
   void _navigateToNextPage() {
     _pageController.nextPage(
@@ -41,13 +18,13 @@ class LoginScreen extends StatelessWidget {
       curve: Curves.ease,
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
     final Auth _auth = Auth();
-  
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -83,23 +60,21 @@ class LoginScreen extends StatelessWidget {
                           String email = emailController.text;
                           String password = passwordController.text;
 
-                          User? user = await _auth.signInWithEmailAndPassword(email, password);
+                          User? user = await _auth.signInWithEmailAndPassword(
+                              email, password);
 
-                          
                           if (user != null) {
                             String email = user.email ?? "";
                             if (email.isNotEmpty) {
                               showToast(message: 'Signed in: $email');
                               String userId = generateUserIdFromEmail(email);
-                              
-                     
+                              print(userId);
                               // Then navigate to userinputmain
                               Navigator.pushReplacementNamed(
                                 context,
                                 '/home',
                                 arguments: {'userId': userId},
                               );
-                              
                             } else {
                               showToast(message: 'Sign in failed');
                             }
@@ -113,21 +88,20 @@ class LoginScreen extends StatelessWidget {
                           String email = emailController.text;
                           String password = passwordController.text;
 
-                          User? user = await _auth.signUpWithEmailAndPassword(email, password);
+                          User? user = await _auth.signUpWithEmailAndPassword(
+                              email, password);
 
                           if (user != null) {
                             String email = user.email ?? "";
                             if (email.isNotEmpty) {
                               showToast(message: 'Signed up: $email');
                               String userId = generateUserIdFromEmail(email);
-                              
+                              print(userId);
                               Navigator.pushReplacementNamed(
                                 context,
                                 '/userinputmain',
-                                
                                 arguments: {'userId': userId}, // Corrected here
                               );
-
                             } else {
                               showToast(message: 'Sign up failed');
                             }

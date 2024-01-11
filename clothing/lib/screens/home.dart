@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:clothing/features/carousels.dart';
 
 class Home extends StatefulWidget {
+  String? userId;
   final String? imagePath;
   final int initialPage;
   SelectionModel? selectionModel;
@@ -15,6 +16,7 @@ class Home extends StatefulWidget {
   ImageDataProvider? imageData;
 
   Home({super.key, 
+    this.userId,  
     this.imageData,
     this.homeModel,
     this.selectionModel,
@@ -27,7 +29,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String? userId;
+  
   late PageController _pageController;
   int _currentPage = 1; // Assuming you want to start from the CameraScreen
   String? selectedOccasion = 'Casual'; // Default value
@@ -39,9 +41,9 @@ class _HomeState extends State<Home> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    selectionModel = Provider.of<SelectionModel>(context, listen: true);
-    homeModel = Provider.of<HomeModel>(context, listen: true);
-    imageData = Provider.of<ImageDataProvider>(context, listen: true);
+    selectionModel = Provider.of<SelectionModel>(context, listen: false);
+    homeModel = Provider.of<HomeModel>(context, listen: false);
+    imageData = Provider.of<ImageDataProvider>(context, listen: false);
   }
 
   @override
@@ -54,84 +56,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    Future _showOccasionMenu(BuildContext context) async {
-      final String? result = await showDialog<String>(
-        context: context,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-            title: const Text('Select Occasion'),
-            children: [
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context, 'Casual');
-                },
-                child: Text('Casual'),
-              ),
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context, 'Formal');
-                },
-                child: Text('Formal'),
-              ),
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context, 'All');
-                },
-                child: Text('All'),
-              ),
-            ],
-          );
-        },
-      );
-
-// Set the selected occasion in HomeModel
-      if (result != null) {
-        Provider.of<HomeModel>(context, listen: false).setOccasion(result);
-      }
-    }
-
-    Future _showApparelMenu(BuildContext context) async {
-      // You can populate this list based on your needs
-      final List<String> options = [
-        'T-Shirts',
-        'Top',
-        'Shirts',
-        'Jeans',
-        'Pants',
-        'Shoes',
-        'Boots',
-        'Skirts',
-        'Dresses',
-        'Jackets',
-        'Blazers',
-        'Heels',
-        'Hats',
-        'Shorts'
-      ];
-
-      final String? result = await showDialog<String>(
-        context: context,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-            title: const Text('Select Apparel Type'),
-            children: options
-                .map((option) => SimpleDialogOption(
-                      onPressed: () {
-                        Navigator.pop(context, option);
-                      },
-                      child: Text(option),
-                    ))
-                .toList(),
-          );
-        },
-      );
-
-      // Set the selected apparel input in HomeModel
-      if (result != null) {
-        Provider.of<HomeModel>(context, listen: false).setApparelInput(result);
-      }
-    }
-
+     final selectionModel = Provider.of<SelectionModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vogue Voyage'),
@@ -154,33 +79,6 @@ class _HomeState extends State<Home> {
         },
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    final selected = _showOccasionMenu(context);
-
-                      Provider.of<HomeModel>(context, listen: false)
-                          .setOccasion(selected as String);
-                    
-                  },
-                  child: Text(
-                      Provider.of<HomeModel>(context).occasion ?? 'Occasion'),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    final selected = await _showApparelMenu(context);
-                    if (selected != null) {
-                      Provider.of<HomeModel>(context, listen: false)
-                          .setApparelInput(selected);
-                    }
-                  },
-                  child: Text(Provider.of<HomeModel>(context).apparelInput ??
-                      'Apparel'),
-                ),
-              ],
-            ),
             Expanded(
               child: PageView(
                 controller: _pageController,
@@ -195,14 +93,12 @@ class _HomeState extends State<Home> {
                           _pageController), // CameraScreen as the first page
                   Padding(
                     padding: EdgeInsets.all(36.0),
-                    child: Carousels(selectionModel: selectionModel,homeModel: homeModel, imageData: imageData,);
-                                    
+                    child: Carousels(
+                      selectionModel: selectionModel,
+                      homeModel: homeModel,
+                      imageData: imageData)             
                     ), 
-                  Container(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
-                    child: UserInfoScreen(), // UserInfoScreen as the third page
-                  ),
+                  UserInfoScreen(), // UserInfoScreen as the third page           
                 ],
               ),
             ),

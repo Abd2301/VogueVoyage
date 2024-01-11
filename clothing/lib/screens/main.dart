@@ -19,8 +19,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => SelectionModel()),
-        ChangeNotifierProvider(create: (_) => UserIdNotifier()),  
+        ChangeNotifierProvider(create: (_) => SelectionModel()),   
         ChangeNotifierProvider(create: (_) => HomeModel()),  
         ChangeNotifierProvider(create: (_) => ImageDataProvider()),
       ],
@@ -34,6 +33,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return MaterialApp(
       title: 'Vogue Voyage',
       theme: ThemeClass.lightTheme,
@@ -41,8 +41,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/splash': (context) => SplashScreen(),
         '/login': (context) => LoginScreen(),
-        '/home': (context) => Home(initialPage: 1,),
-        '/userinputmain': (context) => MyUserPage(userId:),
+        '/home': (context, {arguments}) => Home(userId: arguments?['userId'] ?? '', initialPage: 1 ),
+        '/userinputmain': (context, {arguments}) => MyUserPage(userId: arguments?['userId']?? ''),
       },
     );
   }

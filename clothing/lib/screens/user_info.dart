@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:clothing/utils/selection.dart'; 
+import 'package:clothing/utils/selection.dart';
 import 'package:clothing/features/submit_form.dart';
 
 class UserInfoScreen extends StatelessWidget {
@@ -10,11 +10,12 @@ class UserInfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+   
     return Consumer<SelectionModel>(
       builder: (context, selectionModel, child) {
-        final List<String> bodyShapes = ['Ectomorph', 'Mesomorph', 'Endomorph'];
-        final List<String> skinTones = ['Neutral', 'Warm', 'Cool'];
-        final List<String> genders = ['Male', 'Female', 'Other'];
+        final List<String> bodyShapes = ['ectomorph', 'mesomorph', 'endomorph'];
+        final List<String> skinTones = ['neutral', 'warm', 'cool'];
+        final List<String> genders = ['male', 'female', 'other'];
 
         return Scaffold(
           appBar: AppBar(
@@ -28,8 +29,6 @@ class UserInfoScreen extends StatelessWidget {
                 TextField(
                   onChanged: (value) {
                     selectionModel.name = value;
-                    
-                    
                   },
                   decoration: InputDecoration(labelText: 'Name'),
                 ),
@@ -37,16 +36,19 @@ class UserInfoScreen extends StatelessWidget {
                 TextField(
                   onChanged: (value) {
                     selectionModel.age = int.tryParse(value) ?? 0;
-                    
-                    
                   },
                   decoration: InputDecoration(labelText: 'Age'),
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 16.0),
                 DropdownButton<String>(
-                  value: selectionModel.gender.isNotEmpty ? selectionModel.gender : null,
-                  items: genders.map((String value) => DropdownMenuItem<String>(value: value, child: Text(value))).toList(),
+                  value: selectionModel.gender.isNotEmpty
+                      ? selectionModel.gender
+                      : null,
+                  items: genders
+                      .map((String value) => DropdownMenuItem<String>(
+                          value: value, child: Text(value)))
+                      .toList(),
                   onChanged: (String? newValue) {
                     selectionModel.gender = newValue ?? '';
                   },
@@ -54,10 +56,17 @@ class UserInfoScreen extends StatelessWidget {
                   hint: const Text('Select Gender'),
                 ),
                 const SizedBox(height: 16.0),
-                const Text('Body Shape', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                const Text('Body Shape',
+                    style:
+                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
                 DropdownButton<String>(
-                  value: selectionModel.bodyTypeOption.isNotEmpty ? selectionModel.bodyTypeOption : null,
-                  items: bodyShapes.map((String value) => DropdownMenuItem<String>(value: value, child: Text(value))).toList(),
+                  value: selectionModel.bodyTypeOption.isNotEmpty
+                      ? selectionModel.bodyTypeOption
+                      : null,
+                  items: bodyShapes
+                      .map((String value) => DropdownMenuItem<String>(
+                          value: value, child: Text(value)))
+                      .toList(),
                   onChanged: (String? newValue) {
                     selectionModel.bodyTypeOption = newValue ?? '';
                   },
@@ -65,10 +74,17 @@ class UserInfoScreen extends StatelessWidget {
                   hint: const Text('Select Body Shape'),
                 ),
                 const SizedBox(height: 16.0),
-                const Text('Skin Tone', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                const Text('Skin Tone',
+                    style:
+                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
                 DropdownButton<String>(
-                  value: selectionModel.skinColorOption.isNotEmpty ? selectionModel.skinColorOption : null,
-                  items: skinTones.map((String value) => DropdownMenuItem<String>(value: value, child: Text(value))).toList(),
+                  value: selectionModel.skinColorOption.isNotEmpty
+                      ? selectionModel.skinColorOption
+                      : null,
+                  items: skinTones
+                      .map((String value) => DropdownMenuItem<String>(
+                          value: value, child: Text(value)))
+                      .toList(),
                   onChanged: (String? newValue) {
                     selectionModel.skinColorOption = newValue ?? '';
                   },

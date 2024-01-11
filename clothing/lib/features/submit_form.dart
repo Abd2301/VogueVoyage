@@ -6,17 +6,17 @@ import 'package:clothing/utils/cloud.dart';
 void submitForm(
   BuildContext context, 
   String userId, 
-  SelectionModel model
+  SelectionModel selectionModel
 ) async {
   try {
     // Upload the SelectionModel object to Firestore
-    uploadToFirestore(userId, model); // assuming you want to upload the model in its JSON form
+    uploadToFirestore(userId, selectionModel); // assuming you want to upload the selectionModel in its JSON form
 
-    print('Form submitted with Body Type: ${model.bodyTypeOption}, ' +
-          'Skin Color: ${model.skinColorOption}, ' +
-          'Name: ${model.name}, ' +
-          'Age: ${model.age}, ' +
-          'Gender: ${model.gender}');
+    print('Form submitted with Body Type: ${selectionModel.bodyTypeOption}, ' +
+          'Skin Color: ${selectionModel.skinColorOption}, ' +
+          'Name: ${selectionModel.name}, ' +
+          'Age: ${selectionModel.age}, ' +
+          'Gender: ${selectionModel.gender}');
 
     // Navigate to home screen
     Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);

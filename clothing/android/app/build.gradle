@@ -30,7 +30,6 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-
 apply plugin: "com.google.gms.google-services"
 
 android {
@@ -85,7 +84,8 @@ flutter {
 }
 
 dependencies {
-
+        implementation 'org.tensorflow:tensorflow-android:+'
+        implementation fileTree(include: ['*.jar'], dir: 'libs')
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
 } 
