@@ -160,7 +160,6 @@ class _CameraScreenState extends State<CameraScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => ImagePreviewDialog(
-              
               imagePath: image.path,
               label: label,
               colorHex: colorHex, // Pass the extracted color to the next page
@@ -187,7 +186,8 @@ class ImagePreviewDialog extends StatelessWidget {
   final String? label;
   final String? colorHex;
   final ImageDataProvider? imageDataProvider;
-  ImagePreviewDialog({this.colorHex, this.imagePath, this.label, this.imageDataProvider});
+  ImagePreviewDialog(
+      {this.colorHex, this.imagePath, this.label, this.imageDataProvider});
 
   @override
   Widget build(BuildContext context) {
@@ -219,7 +219,6 @@ class ImagePreviewDialog extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => Carousels(
-
                           imageData: imageData,
                         ),
                       ),

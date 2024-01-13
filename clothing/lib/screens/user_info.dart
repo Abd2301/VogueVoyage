@@ -10,7 +10,6 @@ class UserInfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   
     return Consumer<SelectionModel>(
       builder: (context, selectionModel, child) {
         final List<String> bodyShapes = ['ectomorph', 'mesomorph', 'endomorph'];
@@ -24,7 +23,6 @@ class UserInfoScreen extends StatelessWidget {
           body: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextField(
                   onChanged: (value) {
@@ -40,7 +38,7 @@ class UserInfoScreen extends StatelessWidget {
                   decoration: InputDecoration(labelText: 'Age'),
                   keyboardType: TextInputType.number,
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 16), // Replace SizedBox with Spacer
                 DropdownButton<String>(
                   value: selectionModel.gender.isNotEmpty
                       ? selectionModel.gender
@@ -91,7 +89,8 @@ class UserInfoScreen extends StatelessWidget {
                   isExpanded: true,
                   hint: const Text('Select Skin Tone'),
                 ),
-                Spacer(),
+               Spacer(),
+                
                 Align(
                   alignment: Alignment.centerRight,
                   child: Padding(

@@ -18,11 +18,11 @@ void main() async {
   ); // Initialize Firebase
   runApp(
     MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => SelectionModel()),   
-        ChangeNotifierProvider(create: (_) => HomeModel()),  
-        ChangeNotifierProvider(create: (_) => ImageDataProvider()),
-      ],
+    providers: [
+    ChangeNotifierProvider(create: (_) => SelectionModel()),   
+    ChangeNotifierProvider(create: (_) => HomeModel()),  
+    ChangeNotifierProvider(create: (_) => ImageDataProvider()),
+    ],
       child: MyApp(),
     ),
   );

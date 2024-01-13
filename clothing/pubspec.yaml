@@ -41,6 +41,7 @@ flutter:
   assets:
     - assets/vv2.tflite
     - assets/labels.txt
+    - assets/images/dataset/
     - assets/images/
   fonts:
     - family: Satify

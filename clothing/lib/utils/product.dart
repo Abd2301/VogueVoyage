@@ -1,13 +1,13 @@
 class Product {
-  final String imagePath;
+  String imagePath;
 
-  final String gender;
+  String gender;
 
-  final String occasion;
+  String occasion;
 
-  final String appareltype;
+  String appareltype;
 
-  final String color;
+  String color;
 
   Product(this.imagePath, this.gender, this.occasion, this.appareltype, this.color);
 }

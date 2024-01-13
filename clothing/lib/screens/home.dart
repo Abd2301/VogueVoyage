@@ -15,8 +15,9 @@ class Home extends StatefulWidget {
   HomeModel? homeModel;
   ImageDataProvider? imageData;
 
-  Home({super.key, 
-    this.userId,  
+  Home({
+    super.key,
+    this.userId,
     this.imageData,
     this.homeModel,
     this.selectionModel,
@@ -29,12 +30,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  
   late PageController _pageController;
   int _currentPage = 1; // Assuming you want to start from the CameraScreen
   String? selectedOccasion = 'Casual'; // Default value
   String? selectedApparel = 'T-Shirt'; // Default value
-  late HomeModel homeModel; 
+  late HomeModel homeModel;
   late SelectionModel selectionModel;
   late ImageDataProvider imageData;
 
@@ -51,12 +51,11 @@ class _HomeState extends State<Home> {
     super.initState();
     _pageController = PageController(initialPage: _currentPage);
     _currentPage = widget.initialPage;
-   
   }
 
   @override
   Widget build(BuildContext context) {
-     final selectionModel = Provider.of<SelectionModel>(context);
+    final selectionModel = Provider.of<SelectionModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vogue Voyage'),
@@ -88,17 +87,17 @@ class _HomeState extends State<Home> {
                   });
                 },
                 children: [
-                  CameraScreen(
-                      pageController:
-                          _pageController), // CameraScreen as the first page
-                  Padding(
-                    padding: EdgeInsets.all(36.0),
-                    child: Carousels(
-                      selectionModel: selectionModel,
-                      homeModel: homeModel,
-                      imageData: imageData)             
-                    ), 
-                  UserInfoScreen(), // UserInfoScreen as the third page           
+                  CameraScreen(pageController: _pageController),
+                  // CameraScreen as the first page
+
+                  Carousels(
+                    selectionModel: selectionModel,
+                    homeModel: homeModel,
+                    imageData: imageData,
+                  ),
+
+                  UserInfoScreen(),
+                  // UserInfoScreen as the third page
                 ],
               ),
             ),
