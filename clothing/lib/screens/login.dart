@@ -99,7 +99,7 @@ class LoginScreen extends StatelessWidget {
                               print(userId);
                               Navigator.pushReplacementNamed(
                                 context,
-                                '/userinputmain',
+                                '/user_input',
                                 arguments: {'userId': userId}, // Corrected here
                               );
                             } else {

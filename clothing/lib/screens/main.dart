@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
         '/splash': (context) => SplashScreen(),
         '/login': (context) => LoginScreen(),
         '/home': (context, {arguments}) => Home(userId: arguments?['userId'] ?? '', initialPage: 1 ),
-        '/userinputmain': (context, {arguments}) => MyUserPage(userId: arguments?['userId']?? ''),
+        '/user_input': (context, {arguments}) => MyUserPage(userId: arguments?['userId']?? ''),
       },
     );
   }

@@ -10,6 +10,14 @@ typedef OccasionFilterCallback = void Function(String selectedOccasion);
 
 typedef FilterCallback = void Function(String selectedApparelType);
 
+ void updateApparelTypeMap(String label) {
+
+    if (label == 'sneakers') {
+      boxToApparelTypeMap[1] = ['tshirt', 'jacket', 'jeans', 'other'];
+    }
+    // Add more conditions as needed
+  }
+
 final Map<int, List<String>> boxToApparelTypeMap = {
   1: ['rings', 'hats', 'necklace'],
   2: ['jacket', 'sweatshirt', 'hoodie', 'blazer'],
@@ -125,27 +133,30 @@ class _CarouselState extends State<Carousels> {
         'pink'),
     Product('assets/images/dataset/stripeshirt5.png', 'all', 'casual', 'shirt',
         'white'),
+    Product('assets/images/dataset/shorts1.png', 'male', 'casual', 'shorts',
+        'black'),
+    Product('assets/images/dataset/shorts2.png', 'male', 'casual', 'shorts',
+        'white'),
+    Product('assets/images/dataset/shorts3.png', 'male', 'casual', 'shorts',
+        'beige'),
+    Product('assets/images/dataset/shorts4.png', 'female', 'casual', 'shorts',
+        'white'),
+    Product('assets/images/dataset/shorts5.png', 'female', 'casual', 'shorts',
+        'black'),
+    Product('assets/images/dataset/shorts6.png', 'female', 'casual', 'shorts',
+        'denim'),
+    Product('assets/images/dataset/shorts7.png', 'female', 'casual', 'shorts',
+        'beige'),
+    Product('assets/images/dataset/jacket1.png', 'all', 'casual', 'jacket',
+        'black'),
     Product(
-        'assets/images/dataset/shorts1.png', 'male', 'casual', 'shorts', 'black'),
+        'assets/images/dataset/jacket2.png', 'all', 'casual', 'jacket', 'red'),
+    Product('assets/images/dataset/jacket3.png', 'all', 'casual', 'jacket',
+        'white'),
     Product(
-        'assets/images/dataset/shorts2.png', 'male', 'casual', 'shorts', 'white'),
+        'assets/images/dataset/jacket4.png', 'all', 'casual', 'jacket', 'grey'),
     Product(
-        'assets/images/dataset/shorts3.png', 'male', 'casual', 'shorts', 'beige'),
-    Product(
-        'assets/images/dataset/shorts4.png', 'female', 'casual', 'shorts', 'white'),
-    Product(
-        'assets/images/dataset/shorts5.png', 'female', 'casual', 'shorts', 'black'),
-    Product(
-        'assets/images/dataset/shorts6.png', 'female', 'casual', 'shorts', 'denim'),
-    Product(
-        'assets/images/dataset/shorts7.png', 'female', 'casual', 'shorts', 'beige'),
-    Product(
-        'assets/images/dataset/jacket1.png', 'all', 'casual', 'jacket', 'black'),
-    Product('assets/images/dataset/jacket2.png', 'all', 'casual', 'jacket', 'red'),
-    Product(
-        'assets/images/dataset/jacket3.png', 'all', 'casual', 'jacket', 'white'),
-    Product('assets/images/dataset/jacket4.png', 'all', 'casual', 'jacket', 'grey'),
-    Product('assets/images/dataset/jacket5.png', 'all', 'casual', 'jacket', 'blue'),
+        'assets/images/dataset/jacket5.png', 'all', 'casual', 'jacket', 'blue'),
     Product('assets/images/dataset/sweatshirt1.png', 'all', 'casual',
         'sweatshirt', 'black'),
     Product('assets/images/dataset/sweatshirt2.png', 'all', 'casual',
@@ -156,146 +167,156 @@ class _CarouselState extends State<Carousels> {
         'sweatshirt', 'red'),
     Product('assets/images/dataset/sweatshirt5.png', 'all', 'casual',
         'sweatshirt', 'white'),
+    Product('assets/images/dataset/skirt1.png', 'female', 'casual', 'skirt',
+        'pink'),
     Product(
-        'assets/images/dataset/skirt1.png', 'female', 'casual', 'skirt', 'pink'),
-    Product('assets/images/dataset/skirt2.png', 'female', 'casual', 'skirt', 'red'),
-    Product(
-        'assets/images/dataset/skirt3.png', 'female', 'casual', 'skirt', 'blue'),
-    Product(
-        'assets/images/dataset/skirt4.png', 'female', 'casual', 'skirt', 'purple'),
-    Product(
-        'assets/images/dataset/skirt5.png', 'female', 'casual', 'skirt', 'yellow'),
+        'assets/images/dataset/skirt2.png', 'female', 'casual', 'skirt', 'red'),
+    Product('assets/images/dataset/skirt3.png', 'female', 'casual', 'skirt',
+        'blue'),
+    Product('assets/images/dataset/skirt4.png', 'female', 'casual', 'skirt',
+        'purple'),
+    Product('assets/images/dataset/skirt5.png', 'female', 'casual', 'skirt',
+        'yellow'),
     Product('assets/images/dataset/hat1.png', 'all', 'casual', 'hats', 'black'),
     Product('assets/images/dataset/hat2.png', 'all', 'casual', 'hats', 'white'),
     Product('assets/images/dataset/hat3.png', 'all', 'casual', 'hats', 'beige'),
-    Product(
-        'assets/images/dataset/baggyjeans1.png', 'all', 'casual', 'jeans', 'blue'),
+    Product('assets/images/dataset/baggyjeans1.png', 'all', 'casual', 'jeans',
+        'blue'),
     Product('assets/images/dataset/baggyjeans2.png', 'all', 'casual', 'jeans',
         'faded deep blue'),
-    Product(
-        'assets/images/dataset/baggyjeans3.png', 'all', 'casual', 'jeans', 'black'),
+    Product('assets/images/dataset/baggyjeans3.png', 'all', 'casual', 'jeans',
+        'black'),
     Product('assets/images/dataset/baggyjeans4.png', 'all', 'casual', 'jeans',
         'deep blue'),
     Product('assets/images/dataset/baggyjeans5.png', 'all', 'casual', 'jeans',
         'light blue'),
-    Product(
-        'assets/images/dataset/bootcut1.png', 'all', 'casual', 'jeans', 'black'),
+    Product('assets/images/dataset/bootcut1.png', 'all', 'casual', 'jeans',
+        'black'),
     Product('assets/images/dataset/bootcut2.png', 'all', 'casual', 'jeans',
         'deep blue'),
     Product('assets/images/dataset/bootcut3.png', 'all', 'casual', 'jeans',
         'light blue'),
-Product(
-    'assets/images/dataset/bootcut4.png', 'all', 'casual', 'jeans', 'white'),
-Product(
-    'assets/images/dataset/loosefit1.png', 'all', 'casual', 'jeans', 'black'),
-Product('assets/images/dataset/loosefit2.png', 'all', 'casual', 'jeans',
-    'faded blue'),
-Product('assets/images/dataset/loosefit3.png', 'all', 'casual', 'jeans',
-    'deep blue'),
-Product(
-    'assets/images/dataset/loosefit4.png', 'all', 'casual', 'jeans', 'white'),
-Product(
-    'assets/images/dataset/regularfit1.png', 'all', 'casual', 'jeans', 'black'),
-Product('assets/images/dataset/regularfit2.png', 'all', 'casual', 'jeans',
-    'deep blue'),
-Product(
-    'assets/images/dataset/regularfit3.png', 'all', 'casual', 'jeans', 'white'),
-Product('assets/images/dataset/regularfit4.png', 'all', 'casual', 'jeans',
-    'light blue'),
-Product('assets/images/dataset/skinny1.png', 'all', 'casual', 'jeans',
-    'light blue'),
-Product('assets/images/dataset/skinny2.png', 'all', 'casual', 'jeans', 'black'),
-Product(
-    'assets/images/dataset/skinny3.png', 'all', 'casual', 'jeans', 'deep blue'),
-Product('assets/images/dataset/skinny4.png', 'all', 'casual', 'jeans',
-    'faded black'),
-Product('assets/images/dataset/pant1.png', 'all', 'casual', 'pants', 'red'),
-Product('assets/images/dataset/pant2.png', 'all', 'casual', 'pants', 'yellow'),
-Product('assets/images/dataset/pant3.png', 'all', 'all', 'pants', 'black'),
-Product('assets/images/dataset/pant4.png', 'all', 'all', 'pants', 'blue'),
-Product('assets/images/dataset/pant5.png', 'all', 'all', 'pants', 'grey'),
-Product(
-    'assets/images/dataset/tshirt1.png', 'all', 'casual', 'tshirt', 'red'),
-Product('assets/images/dataset/tshirt2.png', 'all', 'casual', 'tshirt',
-    'orange'),
-Product('assets/images/dataset/tshirt3.png', 'all', 'casual', 'tshirt',
-    'yellow'),
-Product(
-    'assets/images/dataset/tshirt4.png', 'all', 'casual', 'tshirt', 'blue'),
-Product('assets/images/dataset/tshirt5.png', 'all', 'casual', 'tshirt',
-    'green'),
-Product('assets/images/dataset/tshirt6.png', 'all', 'casual', 'tshirt',
-    'white'),
-Product('assets/images/dataset/tshirt7.png', 'all', 'casual', 'tshirt',
-    'black'),
-Product(
-    'assets/images/dataset/tshirt8.png', 'all', 'casual', 'tshirt', 'grey'),
-Product('assets/images/dataset/tshirt9.png', 'all', 'casual', 'tshirt',
-    'brown'),
-Product('assets/images/dataset/graphictee1.png', 'all', 'casual',
-    'graphictshirt', 'white'),
-Product('assets/images/dataset/graphictee2.png', 'all', 'casual',
-    'graphictshirt', 'black'),
-Product('assets/images/dataset/graphictee3.png', 'all', 'casual',
-    'graphictshirt', 'creme'),
-Product('assets/images/dataset/graphictee4.png', 'all', 'casual',
-    'graphictshirt', 'skin colour'),
-Product('assets/images/dataset/graphictee5.png', 'all', 'casual',
-    'graphictshirt', 'blue'),
-Product('assets/images/dataset/hoodie1.png', 'all', 'casual', 'hoodie', 'blue'),
-Product(
-    'assets/images/dataset/hoodie2.png', 'all', 'casual', 'hoodie', 'green'),
-Product('assets/images/dataset/hoodie3.png', 'all', 'casual', 'hoodie',
-    'light blue'),
-Product('assets/images/dataset/hoodie4.png', 'all', 'casual', 'hoodie', 'red'),
-Product(
-    'assets/images/dataset/hoodie5.png', 'all', 'casual', 'hoodie', 'yellow'),
-Product(
-    'assets/images/dataset/shirt1.png', 'all', 'casual', 'shirt', 'black'),
-Product(
-    'assets/images/dataset/shirt2.png', 'all', 'casual', 'shirt', 'white'),
-Product(
-    'assets/images/dataset/shirt3.png', 'all', 'casual', 'shirt', 'orange'),
-Product(
-    'assets/images/dataset/shirt4.png', 'all', 'casual', 'shirt', 'pink'),
-Product(
-    'assets/images/dataset/shirt5.png', 'all', 'casual', 'shirt', 'yellow'),
-Product('assets/images/dataset/stripeshirt1.png', 'all', 'casual', 'shirt',
-    'blue'),
-Product('assets/images/dataset/stripeshirt2.png', 'all', 'casual', 'shirt',
-    'black'),
-Product('assets/images/dataset/stripeshirt3.png', 'all', 'casual', 'shirt',
-    'yellow'),
-Product('assets/images/dataset/stripeshirt4.png', 'all', 'casual', 'shirt',
-    'pink'),
-Product('assets/images/dataset/stripeshirt5.png', 'all', 'casual', 'shirt',
-    'white'),
-Product('assets/images/dataset/plainblazer1.png', 'male', 'casual', 'blazer',
-    'black'),
-Product('assets/images/dataset/plainblazer2.png', 'male', 'casual', 'blazer',
-    'grey'),
-Product('assets/images/dataset/plainblazer3.png', 'male', 'casual', 'blazer',
-    'blue'),
-Product('assets/images/dataset/plainblazer4.png', 'male', 'casual', 'blazer',
-    'red'),
-Product('assets/images/dataset/plainblazer5.png', 'male', 'casual', 'blazer',
-    'white'),
-Product('assets/images/dataset/printedblazer1.png', 'male', 'all', 'blazer',
-    'black'),
-Product('assets/images/dataset/printedblazer2.png', 'male', 'all', 'blazer',
-    'white'),
-Product('assets/images/dataset/printedblazer3.png', 'male', 'all', 'blazer',
-    'blue'),
-Product(
-    'assets/images/dataset/printedblazer4.png', 'male', 'all', 'blazer', 'red'),
-Product('assets/images/dataset/printedblazer5.png', 'male', 'all', 'blazer',
-    'grey'),
-Product('assets/images/dataset/cargo1.png', 'all', 'casual', 'pants', 'black'),
-Product('assets/images/dataset/cargo2.png', 'all', 'casual', 'pants', 'blue'),
-Product('assets/images/dataset/cargo3.png', 'all', 'casual', 'pants', 'grey'),
-Product('assets/images/dataset/cargo4.png', 'all', 'casual', 'pants', 'green'),
-Product('assets/images/dataset/cargo5.png', 'all', 'casual', 'pants', 'cream')
-];
+    Product('assets/images/dataset/bootcut4.png', 'all', 'casual', 'jeans',
+        'white'),
+    Product('assets/images/dataset/loosefit1.png', 'all', 'casual', 'jeans',
+        'black'),
+    Product('assets/images/dataset/loosefit2.png', 'all', 'casual', 'jeans',
+        'faded blue'),
+    Product('assets/images/dataset/loosefit3.png', 'all', 'casual', 'jeans',
+        'deep blue'),
+    Product('assets/images/dataset/loosefit4.png', 'all', 'casual', 'jeans',
+        'white'),
+    Product('assets/images/dataset/regularfit1.png', 'all', 'casual', 'jeans',
+        'black'),
+    Product('assets/images/dataset/regularfit2.png', 'all', 'casual', 'jeans',
+        'deep blue'),
+    Product('assets/images/dataset/regularfit3.png', 'all', 'casual', 'jeans',
+        'white'),
+    Product('assets/images/dataset/regularfit4.png', 'all', 'casual', 'jeans',
+        'light blue'),
+    Product('assets/images/dataset/skinny1.png', 'all', 'casual', 'jeans',
+        'light blue'),
+    Product(
+        'assets/images/dataset/skinny2.png', 'all', 'casual', 'jeans', 'black'),
+    Product('assets/images/dataset/skinny3.png', 'all', 'casual', 'jeans',
+        'deep blue'),
+    Product('assets/images/dataset/skinny4.png', 'all', 'casual', 'jeans',
+        'faded black'),
+    Product('assets/images/dataset/pant1.png', 'all', 'casual', 'pants', 'red'),
+    Product(
+        'assets/images/dataset/pant2.png', 'all', 'casual', 'pants', 'yellow'),
+    Product('assets/images/dataset/pant3.png', 'all', 'all', 'pants', 'black'),
+    Product('assets/images/dataset/pant4.png', 'all', 'all', 'pants', 'blue'),
+    Product('assets/images/dataset/pant5.png', 'all', 'all', 'pants', 'grey'),
+    Product(
+        'assets/images/dataset/tshirt1.png', 'all', 'casual', 'tshirt', 'red'),
+    Product('assets/images/dataset/tshirt2.png', 'all', 'casual', 'tshirt',
+        'orange'),
+    Product('assets/images/dataset/tshirt3.png', 'all', 'casual', 'tshirt',
+        'yellow'),
+    Product(
+        'assets/images/dataset/tshirt4.png', 'all', 'casual', 'tshirt', 'blue'),
+    Product('assets/images/dataset/tshirt5.png', 'all', 'casual', 'tshirt',
+        'green'),
+    Product('assets/images/dataset/tshirt6.png', 'all', 'casual', 'tshirt',
+        'white'),
+    Product('assets/images/dataset/tshirt7.png', 'all', 'casual', 'tshirt',
+        'black'),
+    Product(
+        'assets/images/dataset/tshirt8.png', 'all', 'casual', 'tshirt', 'grey'),
+    Product('assets/images/dataset/tshirt9.png', 'all', 'casual', 'tshirt',
+        'brown'),
+    Product('assets/images/dataset/graphictee1.png', 'all', 'casual',
+        'graphictshirt', 'white'),
+    Product('assets/images/dataset/graphictee2.png', 'all', 'casual',
+        'graphictshirt', 'black'),
+    Product('assets/images/dataset/graphictee3.png', 'all', 'casual',
+        'graphictshirt', 'creme'),
+    Product('assets/images/dataset/graphictee4.png', 'all', 'casual',
+        'graphictshirt', 'skin colour'),
+    Product('assets/images/dataset/graphictee5.png', 'all', 'casual',
+        'graphictshirt', 'blue'),
+    Product(
+        'assets/images/dataset/hoodie1.png', 'all', 'casual', 'hoodie', 'blue'),
+    Product('assets/images/dataset/hoodie2.png', 'all', 'casual', 'hoodie',
+        'green'),
+    Product('assets/images/dataset/hoodie3.png', 'all', 'casual', 'hoodie',
+        'light blue'),
+    Product(
+        'assets/images/dataset/hoodie4.png', 'all', 'casual', 'hoodie', 'red'),
+    Product('assets/images/dataset/hoodie5.png', 'all', 'casual', 'hoodie',
+        'yellow'),
+    Product(
+        'assets/images/dataset/shirt1.png', 'all', 'casual', 'shirt', 'black'),
+    Product(
+        'assets/images/dataset/shirt2.png', 'all', 'casual', 'shirt', 'white'),
+    Product(
+        'assets/images/dataset/shirt3.png', 'all', 'casual', 'shirt', 'orange'),
+    Product(
+        'assets/images/dataset/shirt4.png', 'all', 'casual', 'shirt', 'pink'),
+    Product(
+        'assets/images/dataset/shirt5.png', 'all', 'casual', 'shirt', 'yellow'),
+    Product('assets/images/dataset/stripeshirt1.png', 'all', 'casual', 'shirt',
+        'blue'),
+    Product('assets/images/dataset/stripeshirt2.png', 'all', 'casual', 'shirt',
+        'black'),
+    Product('assets/images/dataset/stripeshirt3.png', 'all', 'casual', 'shirt',
+        'yellow'),
+    Product('assets/images/dataset/stripeshirt4.png', 'all', 'casual', 'shirt',
+        'pink'),
+    Product('assets/images/dataset/stripeshirt5.png', 'all', 'casual', 'shirt',
+        'white'),
+    Product('assets/images/dataset/plainblazer1.png', 'male', 'casual',
+        'blazer', 'black'),
+    Product('assets/images/dataset/plainblazer2.png', 'male', 'casual',
+        'blazer', 'grey'),
+    Product('assets/images/dataset/plainblazer3.png', 'male', 'casual',
+        'blazer', 'blue'),
+    Product('assets/images/dataset/plainblazer4.png', 'male', 'casual',
+        'blazer', 'red'),
+    Product('assets/images/dataset/plainblazer5.png', 'male', 'casual',
+        'blazer', 'white'),
+    Product('assets/images/dataset/printedblazer1.png', 'male', 'all', 'blazer',
+        'black'),
+    Product('assets/images/dataset/printedblazer2.png', 'male', 'all', 'blazer',
+        'white'),
+    Product('assets/images/dataset/printedblazer3.png', 'male', 'all', 'blazer',
+        'blue'),
+    Product('assets/images/dataset/printedblazer4.png', 'male', 'all', 'blazer',
+        'red'),
+    Product('assets/images/dataset/printedblazer5.png', 'male', 'all', 'blazer',
+        'grey'),
+    Product(
+        'assets/images/dataset/cargo1.png', 'all', 'casual', 'pants', 'black'),
+    Product(
+        'assets/images/dataset/cargo2.png', 'all', 'casual', 'pants', 'blue'),
+    Product(
+        'assets/images/dataset/cargo3.png', 'all', 'casual', 'pants', 'grey'),
+    Product(
+        'assets/images/dataset/cargo4.png', 'all', 'casual', 'pants', 'green'),
+    Product(
+        'assets/images/dataset/cargo5.png', 'all', 'casual', 'pants', 'cream')
+  ];
 
   Map<String, Map<String, List<String>>> complementaryColors = {
     'black': {
@@ -498,8 +519,6 @@ Product('assets/images/dataset/cargo5.png', 'all', 'casual', 'pants', 'cream')
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -533,25 +552,30 @@ Product('assets/images/dataset/cargo5.png', 'all', 'casual', 'pants', 'cream')
                 return ListView(
                   children: [
                     CarouselX(
-                        boxIndex: 1,
-                        products: products,
-                       ),
+                      boxIndex: 1,
+                      imageData: imageData,
+                      products: products,
+                    ),
                     CarouselX(
-                        boxIndex: 2,
-                        products: products,
-                        ),
+                      boxIndex: 2,
+                      imageData: imageData,
+                      products: products,
+                    ),
                     CarouselX(
-                        boxIndex: 3,
-                        products: products,
-                        ),
+                      boxIndex: 3,
+                      imageData: imageData,
+                      products: products,
+                    ),
                     CarouselX(
-                        boxIndex: 4,
-                        products: products,
-                        ),
+                      boxIndex: 4,
+                      imageData: imageData,
+                      products: products,
+                    ),
                     CarouselX(
-                        boxIndex: 5,
-                        products: products,
-                        ),
+                      boxIndex: 5,
+                      imageData: imageData,
+                      products: products,
+                    ),
                   ],
                 );
               },
@@ -566,12 +590,12 @@ Product('assets/images/dataset/cargo5.png', 'all', 'casual', 'pants', 'cream')
 class CarouselX extends StatefulWidget {
   final int boxIndex;
   final List<Product> products;
-
+  final ImageDataProvider imageData;
 
   CarouselX({
     required this.boxIndex,
     required this.products,
-
+    required this.imageData,
   });
 
   @override
@@ -580,34 +604,43 @@ class CarouselX extends StatefulWidget {
 
 class _CarouselXState extends State<CarouselX> {
   List<Product> filteredProducts = [];
+  String selectedType = '';
 
   @override
   void initState() {
     super.initState();
     filterProducts();
+    widget.imageData.addListener(() {
+      // Update selectedType based on the label in ImageDataProvider
+      setState(() {
+        selectedType = widget.imageData.label ?? '';
+      });
+      filterCallback(selectedType);
+    });
   }
 
   void filterProducts() {
-    List<String> allowedApparelTypes = boxToApparelTypeMap[widget.boxIndex] ?? [];
+    List<String> allowedApparelTypes =
+        boxToApparelTypeMap[widget.boxIndex] ?? [];
     filteredProducts = widget.products
         .where((product) => allowedApparelTypes.contains(product.appareltype))
         .toList();
   }
 
   void filterCallback(String selectedType) {
-  List<String> filteredImagePaths = widget.products
-      .where((product) => product.appareltype == selectedType)
-      .map((product) => product.imagePath)
-      .toList();
-
-  setState(() {
-    filteredProducts = widget.products
+    List<String> filteredImagePaths = widget.products
         .where((product) => product.appareltype == selectedType)
+        .map((product) => product.imagePath)
         .toList();
-  });
 
-  print('Filtered List for $selectedType: $filteredImagePaths');
-}
+    setState(() {
+      filteredProducts = widget.products
+          .where((product) => product.appareltype == selectedType)
+          .toList();
+    });
+
+    print('Filtered List for $selectedType: $filteredImagePaths');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -630,8 +663,11 @@ class _CarouselXState extends State<CarouselX> {
         // PopupMenuButton for changing apparel type
         PopupMenuButton<String>(
           onSelected: (String selectedType) {
+            // Update the selectedType internally
+            setState(() {
+              this.selectedType = selectedType;
+            });
             filterCallback(selectedType);
-            filterCallback.call(selectedType);
           },
           itemBuilder: (BuildContext context) {
             return boxToApparelTypeMap[widget.boxIndex]?.map((String type) {
