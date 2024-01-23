@@ -30,7 +30,7 @@ if __name__ == "__main__":
     image_folder_path = "S:/Repo/archive/archive(2)/images"
     csv_file_path = "S:/Repo/archive/archive(2)/stylesedited.csv"
     output_folder_path = "S:/Repo/archive/archive(2)/imagesedited"
-    desired_classes = ['Shirt', 'Blazers','Skirts','Ring','Formal Shoes','Jeans', 'Watches', 'Track Pants', 'Tshirts', 'Socks', 'Casual Shoes', 'Flip Flops', 'Tops', 'Sandals', 'Shoe Accessories', 'Sweatshirts', 'Formal Shoes', 'Shorts', 'Sarees', 'Heels', 'Dresses', 'Kurta Sets', 'Shrug', 'Caps', 'Trousers', 'Camisoles', 'Dupatta', 'Capris', 'Tunics', 'Jackets', 'Lounge Pants', 'Necklace and Chains', 'Sports Sandals', 'Sweaters', 'Tracksuits', 'Nightdress', 'Leggings','Tshirt','Shorts'] 
+    desired_classes = ['Shirt', 'Blazers', 'Hoodies', 'Skirts', 'Jeans', 'Casual Pants', 'Tshirts', 'Tops', 'Sweatshirts', 'Shorts', 'Sarees', 'Dresses', 'Shrugs', 'Jackets', 'Sweaters', 'Leggings'] 
 
     # Ensure the output folder exists, create if not
     os.makedirs(output_folder_path, exist_ok=True)

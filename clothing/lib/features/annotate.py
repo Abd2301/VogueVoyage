@@ -42,8 +42,8 @@ if __name__ == "__main__":
     output_folder_path = "path/to/your/yolo_annotations"
     
     # Class mapping dictionary (replace with your actual class mapping)
-    class_mapping = {'Shirts': 0, 'Jeans': 1, 'Watches': 2, 'Track Pants': 3}
-    desired_classes = ['Shirt', 'Blazers','Skirts','Ring','Formal Shoes','Jeans', 'Watches', 'Track Pants', 'Tshirts', 'Socks', 'Casual Shoes', 'Flip Flops', 'Tops', 'Sandals', 'Shoe Accessories', 'Sweatshirts', 'Formal Shoes', 'Shorts', 'Sarees', 'Heels', 'Dresses', 'Kurta Sets', 'Shrug', 'Caps', 'Trousers', 'Camisoles', 'Dupatta', 'Capris', 'Tunics', 'Jackets', 'Lounge Pants', 'Necklace and Chains', 'Sports Sandals', 'Sweaters', 'Tracksuits', 'Nightdress', 'Leggings','Tshirt','Shorts'] 
+    class_mapping = {'Shirts': 0, 'Jeans': 1, 'Track Pants': 2}
+    desired_classes = ['Shirt', 'Blazers', 'Hoodies', 'Skirts', 'Jeans', 'Casual Pants', 'Tshirts', 'Tops', 'Sweatshirts', 'Shorts', 'Sarees', 'Dresses', 'Shrugs', 'Jackets', 'Sweaters', 'Leggings', 'Kurtas'] 
 
     # Ensure the output folder exists, create if not
     os.makedirs(output_folder_path, exist_ok=True)
