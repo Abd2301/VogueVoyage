@@ -9,6 +9,56 @@ import 'package:palette_generator/palette_generator.dart';
 import 'package:clothing/utils/image_data.dart';
 import 'package:provider/provider.dart';
 
+final Map<int, List<String>> boxToApparelTypeMap = {
+  1: ['Rings', 'Hats', 'Necklaces'],
+  2: ['Jackets', 'Sweatshirts', 'Hoodies', 'Blazers'],
+  3: ['Tshirts', 'Tops', 'Shirts', 'Dresses'],
+  4: ['Shorts', 'Skirts', 'Jeans', 'Pants', 'Casual Pants'],
+  5: ['Sneakers', 'Boots', 'Heels', 'Formal Shoes']
+};
+
+void updateApparelTypeMap(String label) {
+  switch (label) {
+    case 'Sneakers':
+      boxToApparelTypeMap[1] = ['Rings', 'Hats', 'Watches'];
+      boxToApparelTypeMap[2] = ['Sweatshirts', 'Jackets', 'Sweaters'];
+      boxToApparelTypeMap[3] = ['Tshirts', 'Shirts', 'Tops'];
+      boxToApparelTypeMap[4] = ['Causal Pants', 'Pants', 'Jeans'];
+      boxToApparelTypeMap[5] = ['Sneakers'];
+      break;
+    case 'Boots':
+      boxToApparelTypeMap[1] = ['Boots', 'Bracelets', 'Scarves'];
+      boxToApparelTypeMap[2] = ['Sweaters', 'Sweatshirts', 'Jackets'];
+      boxToApparelTypeMap[3] = ['Tops', 'Shirts', 'Tshirts'];
+      boxToApparelTypeMap[4] = ['Jeans', 'Pants', 'Leggings'];
+      boxToApparelTypeMap[5] = ['Boots'];
+      break;
+    case 'Blazers':
+      boxToApparelTypeMap[1] = ['Rings', 'Ties', 'Pocket Squares'];
+      boxToApparelTypeMap[2] = ['Blazers'];
+      boxToApparelTypeMap[3] = ['Shirts', 'Tops', 'Dresses'];
+      boxToApparelTypeMap[4] = ['Pants', 'Skirts', 'Trousers'];
+      boxToApparelTypeMap[5] = ['Formal Shoes'];
+      break;
+    case 'Hoodies':
+      boxToApparelTypeMap[1] = ['Rings', 'Hats', 'Necklaces'];
+      boxToApparelTypeMap[2] = ['Hoodies', 'Jackets', 'Sweatshirts'];
+      boxToApparelTypeMap[3] = ['Tshirts', 'Shirts', 'Tops'];
+      boxToApparelTypeMap[4] = ['Casual Pants', 'Jeans', 'Pants'];
+      boxToApparelTypeMap[5] = ['Sneakers', 'Boots'];
+      break;
+    // Add more cases as needed for other classes
+    default:
+      boxToApparelTypeMap[1] = ['Rings', 'Hats', 'Necklaces'];
+      boxToApparelTypeMap[2] = ['Jackets', 'Sweatshirts', 'Hoodies', 'Blazers'];
+      boxToApparelTypeMap[3] = ['Tshirts', 'Tops', 'Shirts', 'Dresses'];
+      boxToApparelTypeMap[4] = ['Shorts', 'Skirts', 'Jeans', 'Pants', 'Casual Pants'];
+      boxToApparelTypeMap[5] = ['Sneakers', 'Boots', 'Heels', 'Formal Shoes'];
+      break;
+      
+  }
+ }
+
 class CameraScreen extends StatefulWidget {
   final PageController pageController;
 
@@ -186,6 +236,7 @@ class ImagePreviewDialog extends StatelessWidget {
   final String? label;
   final String? colorHex;
   final ImageDataProvider? imageDataProvider;
+  
   ImagePreviewDialog(
       {this.colorHex, this.imagePath, this.label, this.imageDataProvider});
 
@@ -193,6 +244,8 @@ class ImagePreviewDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final imageData = Provider.of<ImageDataProvider>(context, listen: true);
     imageData.setImageData(label: label!, colorHex: colorHex!);
+
+    updateApparelTypeMap(label!);
 
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -218,8 +271,9 @@ class ImagePreviewDialog extends StatelessWidget {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Carousels(
-                          imageData: imageData,
+                        builder: (context) => CarouselX(
+                          products: [],
+                          boxToApparelTypeMap: boxToApparelTypeMap,
                         ),
                       ),
                     );
