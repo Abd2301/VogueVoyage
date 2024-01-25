@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'selection.dart';
 
-Future<void> uploadToFirestore(String userId, SelectionModel selectionModel) async {
+Future<void> uploadToFirestore(
+    String userId, SelectionModel selectionModel) async {
   try {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    CollectionReference usersRef = firestore.collection('default');
-    
+    CollectionReference usersRef = firestore.collection('users');
+
     // Ensure userId is not null or empty before proceeding
     if (userId.isNotEmpty) {
       DocumentReference docRef = usersRef.doc(userId);
