@@ -7,8 +7,6 @@ import 'package:clothing/utils/adjustments.dart';
 import 'package:clothing/utils/selection.dart';
 import 'package:clothing/utils/image_data.dart';
 
-typedef OccasionFilterCallback = void Function(String selectedOccasion);
-
 typedef FilterCallback = void Function(String selectedApparelType);
 //desired_classes = ['Shirt', 'Blazers', 'Hoodies', 'Skirts', 'Jeans', 'Casual Pants', 'Tshirts', 'Tops', 'Sweatshirts', 'Shorts', 'Sarees', 'Dresses', 'Shrugs', 'Jackets', 'Sweaters', 'Leggings', 'Kurtas']
 
@@ -179,35 +177,35 @@ List<Product> products = [
       'assets/images/dataset/shirt4.png', 'all', 'casual', 'Shirts', 'pink'),
   Product(
       'assets/images/dataset/shirt5.png', 'all', 'casual', 'Shirts', 'yellow'),
-  Product('assets/images/dataset/stripeshirt1.png', 'all', 'casual', 'Shirts',
+  Product('assets/images/dataset/stripshirt1.png', 'all', 'casual', 'Shirts',
       'blue'),
-  Product('assets/images/dataset/stripeshirt2.png', 'all', 'casual', 'Shirts',
+  Product('assets/images/dataset/stripshirt2.png', 'all', 'casual', 'Shirts',
       'black'),
-  Product('assets/images/dataset/stripeshirt3.png', 'all', 'casual', 'Shirts',
+  Product('assets/images/dataset/stripshirt3.png', 'all', 'casual', 'Shirts',
       'yellow'),
-  Product('assets/images/dataset/stripeshirt4.png', 'all', 'casual', 'Shirts',
+  Product('assets/images/dataset/stripshirt4.png', 'all', 'casual', 'Shirts',
       'pink'),
-  Product('assets/images/dataset/stripeshirt5.png', 'all', 'casual', 'Shirts',
+  Product('assets/images/dataset/stripshirt5.png', 'all', 'casual', 'Shirts',
       'white'),
-  Product('assets/images/dataset/plainBlazer1.png', 'male', 'casual', 'Blazers',
+  Product('assets/images/dataset/plainblazer1.png', 'male', 'casual', 'Blazers',
       'black'),
-  Product('assets/images/dataset/plainBlazer2.png', 'male', 'casual', 'Blazers',
+  Product('assets/images/dataset/plainblazer2.png', 'male', 'casual', 'Blazers',
       'grey'),
-  Product('assets/images/dataset/plainBlazer3.png', 'male', 'casual', 'Blazers',
+  Product('assets/images/dataset/plainblazer3.png', 'male', 'casual', 'Blazers',
       'blue'),
-  Product('assets/images/dataset/plainBlazer4.png', 'male', 'casual', 'Blazers',
+  Product('assets/images/dataset/plainblazer4.png', 'male', 'casual', 'Blazers',
       'red'),
-  Product('assets/images/dataset/plainBlazer5.png', 'male', 'casual', 'Blazers',
+  Product('assets/images/dataset/plainblazer5.png', 'male', 'casual', 'Blazers',
       'white'),
-  Product('assets/images/dataset/printedBlazer1.png', 'male', 'all', 'Blazers',
+  Product('assets/images/dataset/printedblazer1.png', 'male', 'all', 'Blazers',
       'black'),
-  Product('assets/images/dataset/printedBlazer2.png', 'male', 'all', 'Blazers',
+  Product('assets/images/dataset/printedblazer2.png', 'male', 'all', 'Blazers',
       'white'),
-  Product('assets/images/dataset/printedBlazer3.png', 'male', 'all', 'Blazers',
+  Product('assets/images/dataset/printedblazer3.png', 'male', 'all', 'Blazers',
       'blue'),
-  Product('assets/images/dataset/printedBlazer4.png', 'male', 'all', 'Blazers',
+  Product('assets/images/dataset/printedblazer4.png', 'male', 'all', 'Blazers',
       'red'),
-  Product('assets/images/dataset/printedBlazer5.png', 'male', 'all', 'Blazers',
+  Product('assets/images/dataset/printedblazer5.png', 'male', 'all', 'Blazers',
       'grey'),
   Product('assets/images/dataset/cargo1.png', 'all', 'casual', 'Casual Pants',
       'black'),
@@ -331,14 +329,12 @@ class Carousels extends StatefulWidget {
   HomeModel? homeModel;
   ImageDataProvider? imageData;
   final FilterCallback? filterCallback;
-  final boxToApparelTypeMap;
 
   Carousels({
     this.selectionModel,
     this.homeModel,
     this.imageData,
     this.filterCallback,
-    this.boxToApparelTypeMap,
   });
 
   @override
@@ -360,7 +356,6 @@ class _CarouselState extends State<Carousels> {
     Future.delayed(Duration.zero, () {
       selectionModel = widget.selectionModel ?? SelectionModel();
       homeModel = widget.homeModel ?? HomeModel();
-      imageData = widget.imageData ?? ImageDataProvider();
     });
   }
 
@@ -378,92 +373,9 @@ class _CarouselState extends State<Carousels> {
     }
   }
 
-  Future _showOccasionMenu(BuildContext context) async {
-    final String? result = await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: const Text('Select Occasion'),
-          children: [
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 'casual');
-              },
-              child: Text('Casual'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 'formal');
-              },
-              child: Text('Formal'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 'all');
-              },
-              child: Text('All'),
-            ),
-          ],
-        );
-      },
-    );
-
-    // Set the selected occasion in HomeModel
-    if (result != null) {
-      setState(() {
-        selectedOccasion = result;
-      });
-      Provider.of<HomeModel>(context, listen: false).setOccasion(result);
-    }
-  }
-
-  Future _showApparelMenu(BuildContext context) async {
-    // You can populate this list based on your needs
-    final List<String> options = [
-      'T-Shirts',
-      'Top',
-      'Shirts',
-      'Jeans',
-      'Pants',
-      'Shoes',
-      'Boots',
-      'Skirts',
-      'Dresses',
-      'Jackets',
-      'Blazers',
-      'Heels',
-      'Hats',
-      'Shorts'
-    ];
-
-    final String? result = await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: const Text('Select Apparel Type'),
-          children: options
-              .map((option) => SimpleDialogOption(
-                    onPressed: () {
-                      Navigator.pop(context, option);
-                    },
-                    child: Text(option),
-                  ))
-              .toList(),
-        );
-      },
-    );
-
-    // Set the selected apparel input in HomeModel
-    if (result != null) {
-      setState(() {
-        selectedApparel = result;
-      });
-      Provider.of<HomeModel>(context, listen: false).setApparelInput(result);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final boxToApparelTypeMap = Provider.of<BoxToApparelTypeMap>(context);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -471,59 +383,37 @@ class _CarouselState extends State<Carousels> {
       ),
       body: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                onPressed: () async {
-                  await _showOccasionMenu(context);
-                },
-                child: Text('Select Occasion'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  await _showApparelMenu(context);
-                  
-                },
-                child: Text('Select Apparel Type'),
-              ),
-            ],
-          ),
           Expanded(
-            child: Consumer3<SelectionModel, HomeModel, ImageDataProvider>(
-              builder: (context, selectionModel, homeModel, imageData, child) {
+            child: Consumer3<SelectionModel, HomeModel, BoxToApparelTypeMap>(
+              builder: (context, selectionModel, homeModel, boxToApparelTypeMap,
+                  child) {
                 // Rebuild only the widgets that depend on these models
                 return ListView(
                   children: [
                     CarouselX(
                       boxIndex: 1,
-                      imageData: imageData,
-                      products: products,
-                      boxToApparelTypeMap: boxToApparelTypeMap,
+                      boxToApparelTypeMap:
+                          boxToApparelTypeMap.boxToApparelTypeMap,
                     ),
                     CarouselX(
                       boxIndex: 2,
-                      imageData: imageData,
-                      products: products,
-                      boxToApparelTypeMap: boxToApparelTypeMap,
+                      boxToApparelTypeMap:
+                          boxToApparelTypeMap.boxToApparelTypeMap,
                     ),
                     CarouselX(
                       boxIndex: 3,
-                      imageData: imageData,
-                      products: products,
-                      boxToApparelTypeMap: boxToApparelTypeMap,
+                      boxToApparelTypeMap:
+                          boxToApparelTypeMap.boxToApparelTypeMap,
                     ),
                     CarouselX(
                       boxIndex: 4,
-                      imageData: imageData,
-                      products: products,
-                      boxToApparelTypeMap: boxToApparelTypeMap,
+                      boxToApparelTypeMap:
+                          boxToApparelTypeMap.boxToApparelTypeMap,
                     ),
                     CarouselX(
                       boxIndex: 5,
-                      imageData: imageData,
-                      products: products,
-                      boxToApparelTypeMap: boxToApparelTypeMap,
+                      boxToApparelTypeMap:
+                          boxToApparelTypeMap.boxToApparelTypeMap,
                     ),
                   ],
                 );
@@ -538,45 +428,41 @@ class _CarouselState extends State<Carousels> {
 
 class CarouselX extends StatefulWidget {
   late int? boxIndex;
-  late List<Product> products;
-  final ImageDataProvider? imageData;
-  final Map<int, List<String>>? boxToApparelTypeMap;
 
-  CarouselX(
-      {this.boxIndex,
-      required this.products,
-      this.imageData,
-      this.boxToApparelTypeMap});
+  late Map<int, List<String>>? boxToApparelTypeMap;
+
+  CarouselX({
+    this.boxIndex,
+    this.boxToApparelTypeMap,
+  });
 
   @override
   _CarouselXState createState() => _CarouselXState();
 }
 
-class _CarouselXState extends State<CarouselX> {
+class _CarouselXState extends State<CarouselX>
+    with AutomaticKeepAliveClientMixin {
+  List<Product> filteredProducts = [];
   late SelectionModel selectionModel;
   late HomeModel homeModel;
-  late ImageDataProvider imageData;
-  List<Product> filteredProducts = [];
+  Map<int, List<String>>? boxToApparelTypeMap; // Declare as a member variable
 
+  @override
+  bool get wantKeepAlive => true;
   @override
   void initState() {
     super.initState();
-    selectionModel =
-        SelectionModel(); // Replace with your actual initialization
-    homeModel = HomeModel(); // Replace with your actual initialization
-
-    filterProducts();
-    widget.imageData?.addListener(() {
-      setState(() {
-        selectedType = widget.imageData?.label ?? '';
-      });
-      filterCallback(selectedType);
-    });
+    filterCallback(selectedType);
+    boxToApparelTypeMap =
+        Provider.of<BoxToApparelTypeMap>(context, listen: false)
+            .boxToApparelTypeMap;
+    selectionModel = Provider.of<SelectionModel>(context, listen: false);
+    homeModel = Provider.of<HomeModel>(context, listen: false);
+    filteredProductsList(products, widget.boxIndex);
   }
 
   List<Product> filteredProductsList(List<Product> products, int? boxIndex) {
-    List<String> allowedApparelTypes =
-        widget.boxToApparelTypeMap?[boxIndex] ?? [];
+    List<String> allowedApparelTypes = boxToApparelTypeMap?[boxIndex] ?? [];
 
     return products.where((product) {
       return product.gender == selectionModel.gender &&
@@ -610,18 +496,18 @@ class _CarouselXState extends State<CarouselX> {
 
   void filterProducts() {
     setState(() {
-      filteredProducts = filteredProductsList(widget.products, widget.boxIndex);
+      filteredProducts = filteredProductsList(products, widget.boxIndex);
     });
   }
 
   void filterCallback(String selectedType) {
-    List<String> filteredImagePaths = widget.products
+    List<String> filteredImagePaths = products
         .where((product) => product.appareltype == selectedType)
         .map((product) => product.imagePath)
         .toList();
 
     setState(() {
-      filteredProducts = widget.products
+      filteredProducts = products
           .where((product) => product.appareltype == selectedType)
           .toList();
     });
@@ -631,6 +517,12 @@ class _CarouselXState extends State<CarouselX> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    final boxToApparelTypeMapProvider =
+        Provider.of<BoxToApparelTypeMap>(context);
+    final Map<int, List<String>> boxToApparelTypeMap =
+        boxToApparelTypeMapProvider.boxToApparelTypeMap;
+
     return Row(
       children: [
         Expanded(

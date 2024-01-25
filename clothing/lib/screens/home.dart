@@ -93,7 +93,6 @@ class _HomeState extends State<Home> {
                   Carousels(
                     selectionModel: selectionModel,
                     homeModel: homeModel,
-                    imageData: imageData,
                   ),
 
                   UserInfoScreen(),

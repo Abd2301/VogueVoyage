@@ -6,7 +6,7 @@ import 'package:clothing/features/submit_form.dart';
 class UserInfoScreen extends StatelessWidget {
   final String? userId;
 
-  const UserInfoScreen({super.key, this.userId});
+  const UserInfoScreen({this.userId});
 
   @override
   Widget build(BuildContext context) {
