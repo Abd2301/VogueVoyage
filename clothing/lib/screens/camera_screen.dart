@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:ui' as ui;
-import 'package:clothing/features/carousels.dart';
+import 'package:clothing/screens/carousels.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:clothing/features/model_service.dart';
@@ -358,11 +358,7 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
-  }
+
 }
 
 //Pop-up

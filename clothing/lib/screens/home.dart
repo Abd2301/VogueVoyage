@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'camera_screen.dart';
 import 'package:clothing/utils/adjustments.dart';
 import 'package:provider/provider.dart';
-import 'package:clothing/features/carousels.dart';
+import 'package:clothing/screens/carousels.dart';
 
 class Home extends StatefulWidget {
   String? userId;

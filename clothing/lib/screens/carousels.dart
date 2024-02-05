@@ -328,210 +328,119 @@ Map<String, Map<String, List<String>>> complementaryColors = {
   }
 };
 
-//General Carousels Widget Algo
+List<String> getComplementaryColors(String clothingColor, String skinTone) {
+  // Check if the clothing color is in the map
+  if (complementaryColors.containsKey(clothingColor.toLowerCase())) {
+    // Retrieve the sub-map for the clothing color
+    var colorMap = complementaryColors[clothingColor.toLowerCase()]!;
+    // Check if the skin tone has specific recommendations
+    if (colorMap.containsKey(skinTone.toLowerCase())) {
+      return colorMap[skinTone.toLowerCase()]!;
+    } else if (skinTone.toLowerCase() == 'neutral') {
+      // For 'neutral' skin tone, consider combining all suggestions, avoiding duplicates
+      var allColors = Set<String>();
+      colorMap.values.forEach((list) => allColors.addAll(list));
+      return allColors.toList();
+    }
+  }
+  // Return an empty list if there are no matches or if inputs are invalid
+  return [];
+}
+
 class Carousels extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Outfit Builder"),
+        title: Text('Outfit Builder'),
       ),
-      body: Consumer<BoxToApparelTypeMap>(
-        builder: (context, boxToApparelTypeMap, child) {
-          return ListView.builder(
-            itemCount: 5, // As you have 5 categories
-            itemBuilder: (context, index) {
-              // Adjust index to match your category (1-5)
-              return CarouselX(
-                boxIndex: index + 1,
-              );
-            },
-          );
-        },
+      body: ListView.builder(
+        itemCount: 5, // Assuming you have 5 carousels
+        itemBuilder: (context, index) => CarouselWidget(index + 1),
       ),
     );
   }
 }
 
-class CarouselX extends StatefulWidget {
-  final int boxIndex;
-  final Function? onInitFilter;
+class CarouselWidget extends StatelessWidget {
+  final int boxNumber;
 
-  CarouselX({Key? key, required this.boxIndex, this.onInitFilter})
-      : super(key: key);
+  CarouselWidget(this.boxNumber);
 
   @override
-  _CarouselXState createState() => _CarouselXState();
-}
-
-class _CarouselXState extends State<CarouselX> {
-  String? selectedType;
-  List<Product> filteredProducts_lvl1 = [];
-  List<Product> filteredProducts_lvl2 = [];
-  List<Product> currentDisplayList = [];
-  @override
-  void initState() {
-    super.initState();
-    // Listen to SelectionModel changes
-    final selectionModel = Provider.of<SelectionModel>(context, listen: false);
-
-    // Add _onSelectionModelChanged as a listener to the model
-    selectionModel.addListener(_onSelectionModelChanged);
-    final homeModel = Provider.of<HomeModel>(context, listen: false);
-
-    // Add _onSelectionModelChanged as a listener to the model
-    homeModel.addListener(_onHomeModelChanged);
-  }
-
-  void _onSelectionModelChanged() {
-    // This function gets called whenever SelectionModel changes
-    filterProducts_lvl1(); // Adapt this function as necessary
-  }
-
-  void _onHomeModelChanged() {
-    // This function gets called whenever SelectionModel changes
-    filterProducts_lvl1();
-    filterProducts_lvl2();
-  }
-
-  void filterProducts_lvl2() {
+  Widget build(BuildContext context) {
+    final userSelection = Provider.of<SelectionModel>(context);
+    final homeModel = Provider.of<HomeModel>(context);
     final boxToApparelTypeMapProvider =
-        Provider.of<BoxToApparelTypeMap>(context, listen: false);
-    final homeModel = Provider.of<HomeModel>(context, listen: false);
-    print(
-    homeModel);
-    setState(() {
-      filteredProducts_lvl2 = filteredProducts_lvl1.where((product) {
-        final bool matchesOccasion = homeModel.occasion.isEmpty ||
-            product.occasion == homeModel.occasion ||
-            product.occasion == 'other';
-        final bool matchesApparelType = homeModel.apparelInput.isEmpty ||
-            boxToApparelTypeMapProvider.boxToApparelTypeMap.values
-                .any((list) => list.contains(product.appareltype));
-        print(filteredProducts_lvl2);
-        return matchesOccasion &&
-            matchesApparelType; // Include other conditions as necessary
-      }).toList();
-    });
-  }
+        Provider.of<BoxToApparelTypeMap>(context);
+    List<String> apparelTypes =
+        boxToApparelTypeMapProvider.boxToApparelTypeMap[boxNumber] ?? [];
+    // Get the user's selected occasion, apparel input, and color
+    final selectedOccasion = homeModel.occasion;
+    final selectedApparelInput = homeModel.apparelInput;
+    final selectedColor = homeModel.apparelColor;
+    final selectedGender = userSelection.gender;
+    final selectedSkinTone = userSelection.skinColorOption;
+    // Determine complementary colors based on the user's selected color
+    final recommendedColors =
+        getComplementaryColors(selectedColor, selectedSkinTone);
 
-  void filterProducts_lvl1() {
-    final selectionModel = Provider.of<SelectionModel>(context, listen: false);
-    final homeModel = Provider.of<HomeModel>(context, listen: false);
-    print("Filtering products with selectedType: $selectedType");
-    print(
-        "SelectionModel - Gender: ${selectionModel.gender}, SkinColorOption: ${selectionModel.skinColorOption}, BodyTypeOption: ${selectionModel.bodyTypeOption}");
-    setState(() {
-      filteredProducts_lvl1 = products.where((product) {
-        final bool matchesGender = selectionModel.gender.isEmpty ||
-            product.gender == selectionModel.gender ||
-            product.gender == 'other';
-        final bool matchesSkinUndertone =
-            selectionModel.skinColorOption.isEmpty ||
-                getComplementaryColors(
-                        homeModel.apparelColor, selectionModel.skinColorOption)
-                    .contains(product.color);
-        print(filteredProducts_lvl1);
-        return matchesGender &&
-            matchesSkinUndertone; // Include other conditions as necessary
-      }).toList();
-    });
-  }
+    // Filter products based on the apparel type map, occasion, and complementary colors
+    List<Product> filteredProducts = products
+        .where((product) =>
+            boxToApparelTypeMapProvider.boxToApparelTypeMap[boxNumber]!
+                .contains(product.appareltype) &&
+            (selectedOccasion.isEmpty ||
+                product.occasion.toLowerCase() == 'other' ||
+                product.occasion == selectedOccasion) &&
+            recommendedColors.contains(product.color) &&
+            (selectedGender.isEmpty ||
+                product.gender.toLowerCase() == 'other' ||
+                product.gender.toLowerCase() == selectedGender.toLowerCase()))
+        .toList();
 
-  List getComplementaryColors(String apparelColor, String skinColorOption) {
-    final colorRecommendations = complementaryColors[apparelColor];
-
-    if (colorRecommendations == null) return [];
-
-    switch (skinColorOption) {
-      case 'Cool':
-        return colorRecommendations['cool'] ?? [];
-      case 'Warm':
-        return colorRecommendations['warm'] ?? [];
-      default:
-        return [
-          ...(colorRecommendations['cool'] ?? []),
-          ...(colorRecommendations['warm'] ?? [])
-        ];
-    }
-  }
-
-  void filterDisplayedItems() {
-  // Assuming 'allItems' is accessible and contains all items you might want to display
-  if (selectedType == null) {
-    currentDisplayList = List.from(filteredProducts_lvl2); // Show all items if no type is selected
-  } else {
-    currentDisplayList = filteredProducts_lvl2.where((product) {
-      return product.appareltype == selectedType; // Ensure `appareltype` is a valid property of `item`
-    }).cast<String>().toList();
-  }
-  // Refresh the UI with the filtered items
-  setState(() {});
-}
-
-
-  
-  @override
-Widget build(BuildContext context) {
-  final boxToApparelTypeMapProvider = Provider.of<BoxToApparelTypeMap>(context); // Assuming this is correctly set up
-
-  return Row(
+    return Column(
       children: [
-        Expanded(
-          child: SizedBox(
-            height: 250,
-            child: ListView.builder( // Consider using ListView.builder for efficiency
-              itemCount: currentDisplayList.length,
-              itemBuilder: (context, index) {
-                return _buildListItem(context, currentDisplayList[index]);
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Carousel $boxNumber'), // Carousel title
+            PopupMenuButton<String>(
+              onSelected: (String value) {
+                // You can use this value to do something when an option is selected
+                // For example, you might want to filter the displayed products based on the selection
               },
+              itemBuilder: (BuildContext context) {
+                return apparelTypes.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+              icon: Icon(Icons.arrow_drop_down), // Icon for the popup menu
             ),
-          ),
+          ],
         ),
-        PopupMenuButton<String>(
-          onSelected: (String newSelectedType) {
-            setState(() {
-              selectedType = newSelectedType; // Update the state variable correctly
-              filterDisplayedItems(); // Refilter the list based on the new selection
-            });
-          },
-          itemBuilder: (BuildContext context) {
-            final boxToApparelTypeMapProvider = Provider.of<BoxToApparelTypeMap>(context, listen: false);
-            List<String> apparelTypes = boxToApparelTypeMapProvider.boxToApparelTypeMap[widget.boxIndex] ?? [];
-            return apparelTypes.map((String type) {
-              return PopupMenuItem<String>(
-                value: type,
-                child: Text(type),
+        Container(
+          height: 200, // Adjust based on your UI design
+          child: ScrollSnapList(
+            onItemFocus: (index) {},
+            dynamicItemSize: true,
+            itemSize: 150,
+            scrollDirection: Axis.horizontal,
+            itemCount: filteredProducts.length,
+            itemBuilder: (context, index) {
+              Product product = filteredProducts[index];
+              return Card(
+                child:
+                    Image.asset(product.imagePath), // Display the product image
+                // Add more product details here as needed
               );
-            }).toList();
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Icon(Icons.arrow_drop_down),
+            },
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildListItem(BuildContext context, Product product) {
-    return SizedBox(
-      width: 150,
-      height: 300,
-      child: Card(
-        elevation: 12,
-        child: Column(
-          children: [
-            Image.asset(
-              product.imagePath,
-              width: double.infinity,
-              height: 150,
-              fit: BoxFit.cover,
-            ),
-            // Further details about the product can be displayed here
-          ],
-        ),
-      ),
     );
   }
 }
