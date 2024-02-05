@@ -13,12 +13,12 @@ class Home extends StatefulWidget {
   final int initialPage;
   SelectionModel? selectionModel;
   HomeModel? homeModel;
-  ImageDataProvider? imageData;
+  BoxToApparelTypeMap? boxToApparelTypeMap;
 
   Home({
     super.key,
     this.userId,
-    this.imageData,
+    this.boxToApparelTypeMap,
     this.homeModel,
     this.selectionModel,
     this.imagePath,
@@ -36,14 +36,14 @@ class _HomeState extends State<Home> {
   String? selectedApparel = 'T-Shirt'; // Default value
   late HomeModel homeModel;
   late SelectionModel selectionModel;
-  late ImageDataProvider imageData;
+  late BoxToApparelTypeMap boxToApparelTypeMap;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     selectionModel = Provider.of<SelectionModel>(context, listen: false);
     homeModel = Provider.of<HomeModel>(context, listen: false);
-    imageData = Provider.of<ImageDataProvider>(context, listen: false);
+    boxToApparelTypeMap = Provider.of<BoxToApparelTypeMap>(context, listen: false);
   }
 
   @override
@@ -87,12 +87,10 @@ class _HomeState extends State<Home> {
                   });
                 },
                 children: [
-                  CameraScreen(pageController: _pageController),
+                  CameraScreen(),
                   // CameraScreen as the first page
 
                   Carousels(
-                    selectionModel: selectionModel,
-                    homeModel: homeModel,
                   ),
 
                   UserInfoScreen(),

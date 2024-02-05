@@ -1,10 +1,10 @@
 import 'package:clothing/screens/camera_screen.dart';
 import 'package:clothing/utils/adjustments.dart';
 import 'package:flutter/material.dart';
-import 'user_input.dart';
-import 'login.dart';
-import 'splash.dart';
-import 'home.dart';
+import 'screens/user_input.dart';
+import 'screens/login.dart';
+import 'screens/splash.dart';
+import 'screens/home.dart';
 import 'package:clothing/utils/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:clothing/firebase_options.dart';
@@ -22,7 +22,6 @@ void main() async {
     providers: [
     ChangeNotifierProvider(create: (_) => SelectionModel()),   
     ChangeNotifierProvider(create: (_) => HomeModel()),  
-    ChangeNotifierProvider(create: (_) => ImageDataProvider()),
     ChangeNotifierProvider(create: (_) => BoxToApparelTypeMap()),
     ],
       child: MyApp(),

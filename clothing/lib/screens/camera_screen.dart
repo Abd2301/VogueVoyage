@@ -11,27 +11,24 @@ import 'package:provider/provider.dart';
 import 'package:clothing/utils/adjustments.dart';
 
 class CameraScreen extends StatefulWidget {
-  final PageController pageController;
-
-  const CameraScreen({required this.pageController});
+  const CameraScreen({super.key});
 
   @override
   _CameraScreenState createState() => _CameraScreenState();
 }
 
 class _CameraScreenState extends State<CameraScreen> {
-  late CameraController _controller;
-  late Future<void> _initializeControllerFuture;
+  CameraController? _controller;
   bool _showRetryButton = false;
 
   @override
   void initState() {
     super.initState();
+    _initCameraController();
     // Obtain a list of the available cameras on the device.
     availableCameras().then((cameras) {
       if (cameras.isNotEmpty) {
         _controller = CameraController(cameras[0], ResolutionPreset.medium);
-        _initializeControllerFuture = _controller.initialize();
 
         // Set _showRetryButton to true once the controller is initialized
         setState(() {
@@ -39,6 +36,27 @@ class _CameraScreenState extends State<CameraScreen> {
         });
       }
     });
+  }
+
+  Future<void> _initCameraController() async {
+    try {
+      final cameras = await availableCameras();
+      if (cameras.isNotEmpty) {
+        final tempController =
+            CameraController(cameras[0], ResolutionPreset.medium);
+        await tempController.initialize();
+        if (mounted) {
+          setState(() {
+            _controller = tempController;
+            _showRetryButton = true;
+          });
+        }
+      } else {
+        print('No cameras found on this device.');
+      }
+    } catch (e) {
+      print('Error initializing camera: $e');
+    }
   }
 
   Color getPixelColor(ui.Image img, int x, int y) {
@@ -119,9 +137,9 @@ class _CameraScreenState extends State<CameraScreen> {
             ),
             SimpleDialogOption(
               onPressed: () {
-                Navigator.pop(context, 'all');
+                Navigator.pop(context, 'other');
               },
-              child: Text('All'),
+              child: Text('Other'),
             ),
           ],
         );
@@ -138,8 +156,8 @@ class _CameraScreenState extends State<CameraScreen> {
   Future _showApparelMenu(BuildContext context) async {
     // You can populate this list based on your needs
     final List<String> options = [
-      'T-Shirts',
-      'Top',
+      'Tshirts',
+      'Tops',
       'Shirts',
       'Jeans',
       'Pants',
@@ -175,22 +193,74 @@ class _CameraScreenState extends State<CameraScreen> {
     if (result != null) {
       final homeModel = Provider.of<HomeModel>(context, listen: false);
       final boxToApparelTypeMapProvider =
-          Provider.of<BoxToApparelTypeMap>(context);
+          Provider.of<BoxToApparelTypeMap>(context, listen: false);
       homeModel.setApparelInput(result);
       boxToApparelTypeMapProvider.updateApparelTypeMap(result);
+      print(boxToApparelTypeMapProvider.boxToApparelTypeMap);
       print(result);
+      print("Current ApparelInput: ${homeModel.apparelInput}");
+    }
+  }
+
+  Future _showColorMenu(BuildContext context) async {
+    // You can populate this list based on your needs
+    final List<String> options = [
+      'Red',
+      'Green',
+      'Blue',
+      'Yellow',
+      'Orange',
+      'Purple',
+      'Black',
+      'White',
+      'Gray',
+      'Pink',
+      'Cyan',
+      'Magenta',
+      'Lime',
+      'Maroon',
+      'Navy',
+      'Olive',
+      'Turquoise',
+      'Coral',
+    ];
+
+    final String? result = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('Select Color'),
+          children: options
+              .map((option) => SimpleDialogOption(
+                    onPressed: () {
+                      Navigator.pop(context, option);
+                    },
+                    child: Text(option),
+                  ))
+              .toList(),
+        );
+      },
+    );
+
+    // Set the selected apparel input in HomeModel
+    if (result != null) {
+      final homeModel = Provider.of<HomeModel>(context, listen: false);
+      print(result);
+      homeModel.setColor(result);
+      print("Current ApparelColor: ${homeModel.apparelColor}");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_controller.value.isInitialized) {
-      return Container();
+    if (_controller == null || !_controller!.value.isInitialized) {
+      // CameraController is not ready yet, show a loading indicator
+      return Center(child: CircularProgressIndicator());
     }
 
     return Stack(
       children: [
-        CameraPreview(_controller),
+        CameraPreview(_controller!),
         if (_showRetryButton)
           Positioned(
             bottom: 20,
@@ -202,6 +272,7 @@ class _CameraScreenState extends State<CameraScreen> {
                 ElevatedButton(
                   onPressed: () => {
                     _generateOutfit(),
+                   
                   },
                   child: Text('Generate'),
                 ),
@@ -227,6 +298,12 @@ class _CameraScreenState extends State<CameraScreen> {
                 },
                 child: Text('Select Apparel Type'),
               ),
+              ElevatedButton(
+                onPressed: () async {
+                  await _showColorMenu(context);
+                },
+                child: Text('Select Color'),
+              ),
             ],
           ),
         ),
@@ -238,11 +315,11 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Future<void> _generateOutfit() async {
     try {
-      final image = await _controller.takePicture();
+      final image = await _controller?.takePicture();
       await ModelService.loadModel();
 
       // Extract the color from the image
-      Color color = await extractDominantColor(image.path);
+      Color color = await extractDominantColor(image!.path);
 
       var prediction = await ModelService.runInference(File(image.path));
       String? label;
@@ -283,7 +360,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 }
@@ -328,10 +405,7 @@ class ImagePreviewDialog extends StatelessWidget {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CarouselX(
-                          boxToApparelTypeMap:
-                              boxToApparelTypeMapProvider.boxToApparelTypeMap,
-                        ),
+                        builder: (context) => Carousels(),
                       ),
                     );
                   },
@@ -349,179 +423,5 @@ class ImagePreviewDialog extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class BoxToApparelTypeMap with ChangeNotifier {
-  Map<int, List<String>> _boxToApparelTypeMap = {
-    1: ['Rings', 'Hats', 'Necklaces'],
-    2: ['Jackets', 'Sweatshirts', 'Hoodies', 'Blazers'],
-    3: ['Tshirts', 'Tops', 'Shirts', 'Dresses'],
-    4: ['Shorts', 'Skirts', 'Jeans', 'Pants', 'Casual Pants'],
-    5: ['Sneakers', 'Boots', 'Heels', 'Formal Shoes']
-  };
-  Map<int, List<String>> get boxToApparelTypeMap => _boxToApparelTypeMap;
-  void updateApparelTypeMap(String label) {
-    switch (label) {
-      case 'Sneakers':
-        // Adjust for 'Sneakers'
-        _boxToApparelTypeMap[1] = [
-          'Rings',
-          'Hats'
-        ]; // Accessories that may go well with sneakers
-        _boxToApparelTypeMap[2] = [
-          'Jackets',
-          'Sweatshirts'
-        ]; // Outerwear options
-        _boxToApparelTypeMap[3] = ['Tshirts', 'Tops']; // Top wear options
-        _boxToApparelTypeMap[4] = [
-          'Jeans',
-          'Casual Pants'
-        ]; // Bottom wear options
-        _boxToApparelTypeMap[5] = ['Sneakers']; // Footwear
-        break;
-
-      case 'Boots':
-        // Adjust for 'Boots'
-        _boxToApparelTypeMap[1] = ['Necklaces', 'Hats']; // Accessories
-        _boxToApparelTypeMap[2] = ['Blazers', 'Jackets']; // Outerwear options
-        _boxToApparelTypeMap[3] = ['Shirts', 'Dresses']; // Top wear options
-        _boxToApparelTypeMap[4] = ['Skirts', 'Pants']; // Bottom wear options
-        _boxToApparelTypeMap[5] = ['Boots']; // Footwear
-        break;
-
-      case 'Blazers':
-        // Adjust for 'Blazers'
-        _boxToApparelTypeMap[1] = [
-          'Ties',
-          'Pocket Squares'
-        ]; // Accessories that pair with blazers
-        _boxToApparelTypeMap[2] = ['Blazers']; // Outerwear
-        _boxToApparelTypeMap[3] = ['Shirts', 'Tops']; // Top wear options
-        _boxToApparelTypeMap[4] = ['Trousers', 'Pants']; // Bottom wear options
-        _boxToApparelTypeMap[5] = ['Formal Shoes', 'Heels']; // Footwear
-        break;
-
-      case 'Hoodies':
-        // Adjust for 'Hoodies'
-        _boxToApparelTypeMap[1] = ['Rings', 'Necklaces']; // Accessories
-        _boxToApparelTypeMap[2] = ['Hoodies', 'Sweatshirts']; // Outerwear
-        _boxToApparelTypeMap[3] = ['Tshirts', 'Tops']; // Top wear options
-        _boxToApparelTypeMap[4] = [
-          'Jeans',
-          'Casual Pants'
-        ]; // Bottom wear options
-        _boxToApparelTypeMap[5] = ['Sneakers', 'Boots']; // Footwear
-        break;
-      case 'T-Shirts':
-        _boxToApparelTypeMap[1] = ['Necklaces', 'Hats']; // Accessories
-        _boxToApparelTypeMap[2] = ['Sweatshirts', 'Hoodies']; // Outerwear
-        _boxToApparelTypeMap[3] = ['Tshirts']; // Top wear
-        _boxToApparelTypeMap[4] = ['Jeans', 'Shorts']; // Bottom wear
-        _boxToApparelTypeMap[5] = ['Sneakers', 'Casual Shoes']; // Footwear
-        break;
-
-      case 'Dresses':
-        _boxToApparelTypeMap[1] = ['Rings', 'Necklaces']; // Accessories
-        _boxToApparelTypeMap[2] = ['Blazers', 'Sweatshirts']; // Outerwear
-        _boxToApparelTypeMap[3] = ['Dresses']; // Dresses
-        _boxToApparelTypeMap[4] = [
-          'Skirts',
-          'Casual Pants'
-        ]; // Bottom wear for versatility
-        _boxToApparelTypeMap[5] = ['Heels', 'Boots']; // Footwear
-        break;
-
-      case 'Tops':
-        _boxToApparelTypeMap[1] = ['Hats', 'Rings']; // Accessories
-        _boxToApparelTypeMap[2] = ['Jackets', 'Blazers']; // Outerwear
-        _boxToApparelTypeMap[3] = ['Tops', 'Tshirts']; // Top wear
-        _boxToApparelTypeMap[4] = ['Pants', 'Casual Pants']; // Bottom wear
-        _boxToApparelTypeMap[5] = ['Formal Shoes', 'Sneakers']; // Footwear
-        break;
-
-      case 'Pants':
-        _boxToApparelTypeMap[1] = ['Necklaces', 'Rings']; // Accessories
-        _boxToApparelTypeMap[2] = ['Sweatshirts', 'Hoodies']; // Outerwear
-        _boxToApparelTypeMap[3] = ['Shirts', 'Tops']; // Top wear
-        _boxToApparelTypeMap[4] = ['Pants', 'Jeans']; // Pants
-        _boxToApparelTypeMap[5] = ['Casual Shoes', 'Boots']; // Footwear
-        break;
-
-      case 'Shirts':
-        _boxToApparelTypeMap[1] = ['Ties', 'Pocket Squares']; // Accessories
-        _boxToApparelTypeMap[2] = ['Blazers', 'Jackets']; // Outerwear
-        _boxToApparelTypeMap[3] = ['Shirts']; // Top wear
-        _boxToApparelTypeMap[4] = ['Trousers', 'Pants']; // Bottom wear
-        _boxToApparelTypeMap[5] = ['Formal Shoes', 'Casual Shoes']; // Footwear
-        break;
-
-      case 'Jeans':
-        _boxToApparelTypeMap[1] = ['Belts', 'Watches']; // Accessories
-        _boxToApparelTypeMap[2] = ['Hoodies', 'Sweatshirts']; // Outerwear
-        _boxToApparelTypeMap[3] = ['Tops', 'Tshirts']; // Top wear
-        _boxToApparelTypeMap[4] = ['Jeans']; // Bottom wear
-        _boxToApparelTypeMap[5] = ['Boots', 'Sneakers']; // Footwear
-        break;
-
-      case 'Skirts':
-        _boxToApparelTypeMap[1] = ['Rings', 'Bracelets']; // Accessories
-        _boxToApparelTypeMap[2] = ['Blazers', 'Sweatshirts']; // Outerwear
-        _boxToApparelTypeMap[3] = ['Tops', 'Blouses']; // Top wear
-        _boxToApparelTypeMap[4] = ['Skirts']; // Bottom wear
-        _boxToApparelTypeMap[5] = ['Heels', 'Flats']; // Footwear
-        break;
-
-      case 'Shorts':
-        _boxToApparelTypeMap[1] = ['Sunglasses', 'Caps']; // Accessories
-        _boxToApparelTypeMap[2] = ['Tshirts', 'Tank Tops']; // Top wear
-        _boxToApparelTypeMap[3] = ['Shorts']; // Bottom wear
-        _boxToApparelTypeMap[4] = ['Sneakers', 'Sandals']; // Footwear
-        _boxToApparelTypeMap[5] = [
-          'Backpacks',
-          'Crossbody Bags'
-        ]; // Bags as an accessory
-        break;
-
-      case 'Heels':
-        _boxToApparelTypeMap[1] = ['Earrings', 'Necklaces']; // Accessories
-        _boxToApparelTypeMap[2] = ['Dresses', 'Gowns']; // Dresses and similar
-        _boxToApparelTypeMap[3] = ['Skirts', 'Trousers']; // Bottom wear
-        _boxToApparelTypeMap[4] = ['Heels']; // Footwear
-        _boxToApparelTypeMap[5] = ['Clutches', 'Evening Bags']; // Bags
-        break;
-
-      case 'Formal Shoes':
-        _boxToApparelTypeMap[1] = ['Cufflinks', 'Ties']; // Accessories
-        _boxToApparelTypeMap[2] = ['Suits', 'Blazers']; // Outerwear
-        _boxToApparelTypeMap[3] = ['Shirts', 'Formal Tops']; // Top wear
-        _boxToApparelTypeMap[4] = ['Formal Trousers', 'Pants']; // Bottom wear
-        _boxToApparelTypeMap[5] = ['Formal Shoes']; // Footwear
-        break;
-      default:
-        _boxToApparelTypeMap[1] = ['Rings', 'Hats', 'Necklaces'];
-        _boxToApparelTypeMap[2] = [
-          'Jackets',
-          'Sweatshirts',
-          'Hoodies',
-          'Blazers'
-        ];
-        _boxToApparelTypeMap[3] = ['Tshirts', 'Tops', 'Shirts', 'Dresses'];
-        _boxToApparelTypeMap[4] = [
-          'Shorts',
-          'Skirts',
-          'Jeans',
-          'Pants',
-          'Casual Pants'
-        ];
-        _boxToApparelTypeMap[5] = [
-          'Sneakers',
-          'Boots',
-          'Heels',
-          'Formal Shoes'
-        ];
-        break;
-    }
-    notifyListeners();
   }
 }
