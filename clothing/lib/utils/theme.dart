@@ -7,7 +7,7 @@ class ThemeClass {
     useMaterial3: true,
     colorScheme: const ColorScheme.light().copyWith(
       primary: Colors.black,
-      background: Color.fromRGBO(251,244,236,2)
+      background: const Color.fromRGBO(251,244,236,2)
     ),
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: Colors.black), // Set text color to black
@@ -20,7 +20,7 @@ class ThemeClass {
         ),
         
         backgroundColor: MaterialStateProperty.resolveWith<Color>(
-          (_) => Color.fromARGB(255, 244, 236, 220),
+          (_) => const Color.fromARGB(255, 244, 236, 220),
         ),
         shape: MaterialStateProperty.resolveWith<OutlinedBorder>(
           (_) {
@@ -38,6 +38,8 @@ class ThemeClass {
 }
 
 class ThemeWidget extends StatelessWidget {
+  const ThemeWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

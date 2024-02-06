@@ -330,7 +330,7 @@ class Carousels extends StatefulWidget {
   ImageDataProvider? imageData;
   final FilterCallback? filterCallback;
 
-  Carousels({
+  Carousels({super.key, 
     this.selectionModel,
     this.homeModel,
     this.imageData,
@@ -431,7 +431,7 @@ class CarouselX extends StatefulWidget {
 
   late Map<int, List<String>>? boxToApparelTypeMap;
 
-  CarouselX({
+  CarouselX({super.key, 
     this.boxIndex,
     this.boxToApparelTypeMap,
   });
@@ -557,8 +557,8 @@ class _CarouselXState extends State<CarouselX>
                 }).toList() ??
                 [];
           },
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
             child: Icon(Icons.arrow_drop_down),
           ),
         ),

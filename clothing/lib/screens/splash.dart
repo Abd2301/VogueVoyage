@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashState createState() => _SplashState();
 }
@@ -10,7 +12,7 @@ class _SplashState extends State<SplashScreen> {
   void initState() {
     super.initState();
     // Add your initialization logic here
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       // Navigate to the login or home screen
       Navigator.pushReplacementNamed(context, '/login');
     });

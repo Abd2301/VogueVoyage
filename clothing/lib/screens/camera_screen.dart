@@ -6,14 +6,13 @@ import 'package:camera/camera.dart';
 import 'package:clothing/features/model_service.dart';
 import 'package:flutter/services.dart';
 import 'package:palette_generator/palette_generator.dart';
-import 'package:clothing/utils/image_data.dart';
 import 'package:provider/provider.dart';
 import 'package:clothing/utils/adjustments.dart';
 
 class CameraScreen extends StatefulWidget {
   final PageController pageController;
 
-  const CameraScreen({required this.pageController});
+  const CameraScreen({super.key, required this.pageController});
 
   @override
   _CameraScreenState createState() => _CameraScreenState();
@@ -44,28 +43,24 @@ class _CameraScreenState extends State<CameraScreen> {
   Color getPixelColor(ui.Image img, int x, int y) {
     // Get the byte data for the image
     final ByteData byteData = img.toByteData() as ByteData;
-    if (byteData != null) {
-      // Calculate the offset for the pixel at (x, y)
-      final int offset = (y * img.width + x) * 4;
+    // Calculate the offset for the pixel at (x, y)
+    final int offset = (y * img.width + x) * 4;
 
-      // Extract the color components (alpha, red, green, blue)
-      int alpha = byteData.getUint8(offset);
-      int red = byteData.getUint8(offset + 1);
-      int green = byteData.getUint8(offset + 2);
-      int blue = byteData.getUint8(offset + 3);
+    // Extract the color components (alpha, red, green, blue)
+    int alpha = byteData.getUint8(offset);
+    int red = byteData.getUint8(offset + 1);
+    int green = byteData.getUint8(offset + 2);
+    int blue = byteData.getUint8(offset + 3);
 
-      return Color.fromARGB(alpha, red, green, blue);
-    } else {
-      throw Exception("Failed to get ByteData from Image.");
+    return Color.fromARGB(alpha, red, green, blue);
     }
-  }
 
   Future<Color> extractDominantColor(String path) async {
     final data = await rootBundle.load(path);
     final bytes = Uint8List.view(data.buffer);
 
     final image = await decodeImageFromList(bytes);
-    final paletteGenerator = await PaletteGenerator.fromImage(image!);
+    final paletteGenerator = await PaletteGenerator.fromImage(image);
 
     // Retrieve the most dominant color
     final Color dominantColor = paletteGenerator.dominantColor!.color;
@@ -109,19 +104,19 @@ class _CameraScreenState extends State<CameraScreen> {
               onPressed: () {
                 Navigator.pop(context, 'casual');
               },
-              child: Text('Casual'),
+              child: const Text('Casual'),
             ),
             SimpleDialogOption(
               onPressed: () {
                 Navigator.pop(context, 'formal');
               },
-              child: Text('Formal'),
+              child: const Text('Formal'),
             ),
             SimpleDialogOption(
               onPressed: () {
                 Navigator.pop(context, 'all');
               },
-              child: Text('All'),
+              child: const Text('All'),
             ),
           ],
         );
@@ -203,7 +198,7 @@ class _CameraScreenState extends State<CameraScreen> {
                   onPressed: () => {
                     _generateOutfit(),
                   },
-                  child: Text('Generate'),
+                  child: const Text('Generate'),
                 ),
               ],
             ),
@@ -219,13 +214,13 @@ class _CameraScreenState extends State<CameraScreen> {
                 onPressed: () async {
                   await _showOccasionMenu(context);
                 },
-                child: Text('Select Occasion'),
+                child: const Text('Select Occasion'),
               ),
               ElevatedButton(
                 onPressed: () async {
                   await _showApparelMenu(context);
                 },
-                child: Text('Select Apparel Type'),
+                child: const Text('Select Apparel Type'),
               ),
             ],
           ),
@@ -294,7 +289,7 @@ class ImagePreviewDialog extends StatelessWidget {
   final String? label;
   final String? colorHex;
 
-  ImagePreviewDialog({this.colorHex, this.imagePath, this.label});
+  const ImagePreviewDialog({super.key, this.colorHex, this.imagePath, this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -335,13 +330,13 @@ class ImagePreviewDialog extends StatelessWidget {
                       ),
                     );
                   },
-                  child: Text('Continue'),
+                  child: const Text('Continue'),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context); // Close the dialog
                   },
-                  child: Text('Retry'),
+                  child: const Text('Retry'),
                 ),
               ],
             ),
@@ -353,7 +348,7 @@ class ImagePreviewDialog extends StatelessWidget {
 }
 
 class BoxToApparelTypeMap with ChangeNotifier {
-  Map<int, List<String>> _boxToApparelTypeMap = {
+  final Map<int, List<String>> _boxToApparelTypeMap = {
     1: ['Rings', 'Hats', 'Necklaces'],
     2: ['Jackets', 'Sweatshirts', 'Hoodies', 'Blazers'],
     3: ['Tshirts', 'Tops', 'Shirts', 'Dresses'],

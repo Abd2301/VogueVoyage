@@ -65,13 +65,13 @@ class _HomeState extends State<Home> {
           if (details.primaryVelocity! > 0) {
             // Swiping to the right
             _pageController.previousPage(
-              duration: Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 300),
               curve: Curves.easeOut,
             );
           } else if (details.primaryVelocity! < 0) {
             // Swiping to the left
             _pageController.nextPage(
-              duration: Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 300),
               curve: Curves.easeOut,
             );
           }
@@ -95,7 +95,7 @@ class _HomeState extends State<Home> {
                     homeModel: homeModel,
                   ),
 
-                  UserInfoScreen(),
+                  const UserInfoScreen(),
                   // UserInfoScreen as the third page
                 ],
               ),

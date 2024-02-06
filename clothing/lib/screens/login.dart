@@ -14,7 +14,7 @@ class LoginScreen extends StatelessWidget {
 
   void _navigateToNextPage() {
     _pageController.nextPage(
-      duration: Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 500),
       curve: Curves.ease,
     );
   }
@@ -23,7 +23,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
-    final Auth _auth = Auth();
+    final Auth auth = Auth();
 
     return Scaffold(
       body: Stack(
@@ -42,13 +42,13 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20.0),
                   TextField(
-                    decoration: InputDecoration(labelText: 'Email'),
+                    decoration: const InputDecoration(labelText: 'Email'),
                     controller: emailController,
                   ),
                   const SizedBox(height: 20.0),
                   TextField(
                     obscureText: true,
-                    decoration: InputDecoration(labelText: 'Password'),
+                    decoration: const InputDecoration(labelText: 'Password'),
                     controller: passwordController,
                   ),
                   const SizedBox(height: 20.0),
@@ -60,7 +60,7 @@ class LoginScreen extends StatelessWidget {
                           String email = emailController.text;
                           String password = passwordController.text;
 
-                          User? user = await _auth.signInWithEmailAndPassword(
+                          User? user = await auth.signInWithEmailAndPassword(
                               email, password);
 
                           if (user != null) {
@@ -88,7 +88,7 @@ class LoginScreen extends StatelessWidget {
                           String email = emailController.text;
                           String password = passwordController.text;
 
-                          User? user = await _auth.signUpWithEmailAndPassword(
+                          User? user = await auth.signUpWithEmailAndPassword(
                               email, password);
 
                           if (user != null) {

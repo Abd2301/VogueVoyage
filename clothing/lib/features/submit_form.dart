@@ -12,11 +12,7 @@ void submitForm(
     // Upload the SelectionModel object to Firestore
     uploadToFirestore(userId, selectionModel); // assuming you want to upload the selectionModel in its JSON form
 
-    print('Form submitted with Body Type: ${selectionModel.bodyTypeOption}, ' +
-          'Skin Color: ${selectionModel.skinColorOption}, ' +
-          'Name: ${selectionModel.name}, ' +
-          'Age: ${selectionModel.age}, ' +
-          'Gender: ${selectionModel.gender}');
+    print('Form submitted with Body Type: ${selectionModel.bodyTypeOption}, Skin Color: ${selectionModel.skinColorOption}, Name: ${selectionModel.name}, Age: ${selectionModel.age}, Gender: ${selectionModel.gender}');
 
     // Navigate to home screen
     Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);

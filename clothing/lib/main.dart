@@ -19,13 +19,13 @@ void main() async {
   ); // Initialize Firebase
   runApp(
     MultiProvider(
-    providers: [
-    ChangeNotifierProvider(create: (_) => SelectionModel()),   
-    ChangeNotifierProvider(create: (_) => HomeModel()),  
-    ChangeNotifierProvider(create: (_) => ImageDataProvider()),
-    ChangeNotifierProvider(create: (_) => BoxToApparelTypeMap()),
-    ],
-      child: MyApp(),
+      providers: [
+        ChangeNotifierProvider(create: (_) => SelectionModel()),
+        ChangeNotifierProvider(create: (_) => HomeModel()),
+        ChangeNotifierProvider(create: (_) => ImageDataProvider()),
+        ChangeNotifierProvider(create: (_) => BoxToApparelTypeMap()),
+      ],
+      child: const MyApp(),
     ),
   );
 }
@@ -35,16 +35,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     return MaterialApp(
       title: 'Vogue Voyage',
       theme: ThemeClass.lightTheme,
       initialRoute: '/splash',
       routes: {
-        '/splash': (context) => SplashScreen(),
+        '/splash': (context) => const SplashScreen(),
         '/login': (context) => LoginScreen(),
-        '/home': (context, {arguments}) => Home(userId: arguments?['userId'] ?? '', initialPage: 1 ),
-        '/user_input': (context, {arguments}) => MyUserPage(userId: arguments?['userId']?? ''),
+        '/home': (context, {arguments}) =>
+            Home(userId: arguments?['userId'] ?? '', initialPage: 1),
+        '/user_input': (context, {arguments}) =>
+            MyUserPage(userId: arguments?['userId'] ?? ''),
       },
     );
   }

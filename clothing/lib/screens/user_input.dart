@@ -6,22 +6,22 @@ import 'package:provider/provider.dart';
 class MyUserPage extends StatelessWidget {
   final String userId;
 
-  MyUserPage({required this.userId});
+  const MyUserPage({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
     SelectionModel selectionModel = Provider.of<SelectionModel>(context);
 
-    final PageController _pageController = PageController();
+    final PageController pageController = PageController();
     // ignore: unused_local_variable
-    int _currentPage = 0;
+    int currentPage = 0;
 
-    void _navigateToNextPage() {
-      _pageController.nextPage(
-          duration: Duration(milliseconds: 500), curve: Curves.ease);
+    void navigateToNextPage() {
+      pageController.nextPage(
+          duration: const Duration(milliseconds: 500), curve: Curves.ease);
     }
 
-    void _updateUserSelections(SelectionModel selectionModel) {
+    void updateUserSelections(SelectionModel selectionModel) {
       selectionModel.updateUserInfo(
         name: selectionModel.name,
         age: selectionModel.age,
@@ -33,22 +33,22 @@ class MyUserPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome!'),
+        title: const Text('Welcome!'),
       ),
       body: PageView(
-        controller: _pageController,
+        controller: pageController,
         children: [
           UserInputPage(
-            onContinuePressed: _navigateToNextPage,
+            onContinuePressed: navigateToNextPage,
             selectionModel: selectionModel,
           ),
           BodyTypeOptions(
-            onContinuePressed: _navigateToNextPage,
+            onContinuePressed: navigateToNextPage,
             selectionModel: selectionModel,
           ),
           SkinColorOptions(
             onSubmitPressed: () {
-              _updateUserSelections(selectionModel);
+              updateUserSelections(selectionModel);
               submitForm(context, userId, selectionModel);
             },
             selectionModel: selectionModel,
@@ -56,7 +56,7 @@ class MyUserPage extends StatelessWidget {
           ),
         ],
         onPageChanged: (int page) {
-          _currentPage = page;
+          currentPage = page;
         },
       ),
     );
@@ -67,7 +67,7 @@ class UserInputPage extends StatefulWidget {
   final Function onContinuePressed;
   final SelectionModel selectionModel;
 
-  UserInputPage({
+  const UserInputPage({super.key, 
     required this.onContinuePressed,
     required this.selectionModel,
   });
@@ -88,17 +88,17 @@ class _UserInputPageState extends State<UserInputPage> {
           children: [
             TextField(
               onChanged: (value) => selectionModel.name = value,
-              decoration: InputDecoration(labelText: 'Enter your name'),
+              decoration: const InputDecoration(labelText: 'Enter your name'),
             ),
             TextField(
               onChanged: (value) =>
                   selectionModel.age = int.tryParse(value) ?? 0,
-              decoration: InputDecoration(labelText: 'Enter your age'),
+              decoration: const InputDecoration(labelText: 'Enter your age'),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             DropdownButton<String>(
-              hint: Text('Select Gender'),
+              hint: const Text('Select Gender'),
               value: selectionModel.gender.isNotEmpty
                   ? selectionModel.gender
                   : null,
@@ -115,12 +115,12 @@ class _UserInputPageState extends State<UserInputPage> {
                 );
               }).toList(),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 widget.onContinuePressed();
               },
-              child: Text('Continue'),
+              child: const Text('Continue'),
             ),
           ],
         ),
@@ -133,7 +133,7 @@ class BodyTypeOptions extends StatefulWidget {
   final VoidCallback onContinuePressed;
   final SelectionModel selectionModel;
 
-  BodyTypeOptions({
+  const BodyTypeOptions({super.key, 
     required this.onContinuePressed,
     required this.selectionModel,
   });
@@ -156,7 +156,7 @@ class _BodyTypeOptionsState extends State<BodyTypeOptions> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Body Type'),
+        title: const Text('Body Type'),
       ),
       body: Center(
         child: Column(
@@ -164,18 +164,18 @@ class _BodyTypeOptionsState extends State<BodyTypeOptions> {
           children: [
             buildClickableImage(
                 'assets/images/body_type1.png', 'Ectomorph', 'ectomorph'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             buildClickableImage(
                 'assets/images/body_type2.png', 'Mesomorph', 'mesomorph'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             buildClickableImage(
                 'assets/images/body_type3.png', 'Endomorph', 'endomorph'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 widget.onContinuePressed();
               },
-              child: Text('Continue'),
+              child: const Text('Continue'),
             )
           ],
         ),
@@ -198,7 +198,7 @@ class _BodyTypeOptionsState extends State<BodyTypeOptions> {
             print('Selected Body Type: $optionText');
           },
           child: AnimatedContainer(
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             decoration: BoxDecoration(
               border: Border.all(
                   color: isSelected ? Colors.black : Colors.transparent,
@@ -209,7 +209,7 @@ class _BodyTypeOptionsState extends State<BodyTypeOptions> {
               colorFilter: isSelected
                   ? ColorFilter.mode(
                       Colors.black.withOpacity(0.5), BlendMode.darken)
-                  : ColorFilter.mode(Colors.transparent, BlendMode.clear),
+                  : const ColorFilter.mode(Colors.transparent, BlendMode.clear),
               child: Image.asset(
                 imagePath,
                 width: 100,
@@ -218,10 +218,10 @@ class _BodyTypeOptionsState extends State<BodyTypeOptions> {
             ),
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Text(
           optionText,
-          style: TextStyle(fontSize: 16),
+          style: const TextStyle(fontSize: 16),
         ),
       ],
     );
@@ -233,7 +233,7 @@ class SkinColorOptions extends StatefulWidget {
   final SelectionModel? selectionModel;
   final String userId;
 
-  SkinColorOptions({
+  const SkinColorOptions({super.key, 
     this.onSubmitPressed,
     this.selectionModel,
     required this.userId,
@@ -257,7 +257,7 @@ class _SkinColorOptionsState extends State<SkinColorOptions> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Skin Undertone'),
+        title: const Text('Skin Undertone'),
       ),
       body: Center(
         child: Column(
@@ -265,13 +265,13 @@ class _SkinColorOptionsState extends State<SkinColorOptions> {
           children: [
             buildClickableImage(
                 'assets/images/skin_color1.png', 'Warm', 'warm'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             buildClickableImage(
                 'assets/images/skin_color2.png', 'Neutral', 'neutral'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             buildClickableImage(
                 'assets/images/skin_color3.png', 'Cool', 'cool'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 if (_selectedOption != null) {
@@ -284,25 +284,18 @@ class _SkinColorOptionsState extends State<SkinColorOptions> {
                   print(widget.selectionModel!.skinColorOption);
                   print(widget.selectionModel!.bodyTypeOption);
 
-                  if (widget.selectionModel!.bodyTypeOption != null &&
-                      widget.selectionModel!.skinColorOption != null &&
-                      widget.userId != null) {
-                    submitForm(
-                      context,
-                      widget.userId,
-                      widget.selectionModel!, // Fixed here
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text('Please complete all selections')));
-                  }
-                  widget.onSubmitPressed!();
+                  submitForm(
+                    context,
+                    widget.userId,
+                    widget.selectionModel!, // Fixed here
+                  );
+                                  widget.onSubmitPressed!();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Please select an option')));
+                      const SnackBar(content: Text('Please select an option')));
                 }
               },
-              child: Text('Submit'),
+              child: const Text('Submit'),
             ),
           ],
         ),
@@ -324,7 +317,7 @@ class _SkinColorOptionsState extends State<SkinColorOptions> {
             print('Selected Skin Undertone: $optionText');
           },
           child: AnimatedContainer(
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             decoration: BoxDecoration(
               border: Border.all(
                   color: isSelected ? Colors.black : Colors.transparent,
@@ -335,7 +328,7 @@ class _SkinColorOptionsState extends State<SkinColorOptions> {
               colorFilter: isSelected
                   ? ColorFilter.mode(
                       Colors.black.withOpacity(0.5), BlendMode.darken)
-                  : ColorFilter.mode(Colors.transparent, BlendMode.clear),
+                  : const ColorFilter.mode(Colors.transparent, BlendMode.clear),
               child: Image.asset(
                 imagePath,
                 width: 100,
@@ -344,10 +337,10 @@ class _SkinColorOptionsState extends State<SkinColorOptions> {
             ),
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Text(
           optionText,
-          style: TextStyle(fontSize: 16),
+          style: const TextStyle(fontSize: 16),
         ),
       ],
     );

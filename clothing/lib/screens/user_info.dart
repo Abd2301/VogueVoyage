@@ -6,7 +6,7 @@ import 'package:clothing/features/submit_form.dart';
 class UserInfoScreen extends StatelessWidget {
   final String? userId;
 
-  const UserInfoScreen({this.userId});
+  const UserInfoScreen({super.key, this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class UserInfoScreen extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text('User Information'),
+            title: const Text('User Information'),
           ),
           body: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -28,14 +28,14 @@ class UserInfoScreen extends StatelessWidget {
                   onChanged: (value) {
                     selectionModel.name = value;
                   },
-                  decoration: InputDecoration(labelText: 'Name'),
+                  decoration: const InputDecoration(labelText: 'Name'),
                 ),
                 const SizedBox(height: 16.0),
                 TextField(
                   onChanged: (value) {
                     selectionModel.age = int.tryParse(value) ?? 0;
                   },
-                  decoration: InputDecoration(labelText: 'Age'),
+                  decoration: const InputDecoration(labelText: 'Age'),
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 16), // Replace SizedBox with Spacer
@@ -89,7 +89,7 @@ class UserInfoScreen extends StatelessWidget {
                   isExpanded: true,
                   hint: const Text('Select Skin Tone'),
                 ),
-               Spacer(),
+               const Spacer(),
                 
                 Align(
                   alignment: Alignment.centerRight,
